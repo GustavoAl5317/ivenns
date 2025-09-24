@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IVENNS TECNOLOGIA - Peças, Servidores e Assistência Técnica</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+       :root{
+      --bg:#0b1020; /* fundo escuro azulado */
+      --card:#0f1530;
+      --soft:#11173a;
+      --txt:#000000;
+      --muted:#939ec7;
+      --blue:#3b82f6;
+      --purple:#8b5cf6;
+      --accent: linear-gradient(135deg, var(--blue), var(--purple));
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:"Poppins",system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial;
+      color:var(--txt);
+      background:
+        radial-gradient(1200px 600px at 120% -10%, rgba(139,92,246,.20), transparent 55%),
+        radial-gradient(800px 500px at -10% 10%, rgba(59,130,246,.18), transparent 50%),
+        linear-gradient(180deg, #0a0f1f 0%, #0b1020 40%, #0b1020 100%);
+      overflow-x:hidden;
+    }
+    a{color:inherit;text-decoration:none}
+    .container{width:min(1200px, 92%); margin-inline:auto}
+    .btn{
+      display:inline-flex; align-items:center; gap:.6rem;
+      padding:.9rem 1.2rem; border-radius:14px; font-weight:600;
+      background:var(--accent); color:rgb(128, 182, 245); box-shadow:0 10px 24px rgba(99,102,241,.28);
+      border:1px solid rgba(255,255,255,.12); transition:.25s transform, .25s box-shadow, .25s filter;
+    }
+    .btn:hover{transform:translateY(-2px); box-shadow:0 14px 30px rgba(99,102,241,.36); filter:saturate(1.1)}
+    .btn.outline{background:transparent; border:1px solid rgba(255,255,255,.18)}
+    header.nav{
+      position:sticky; top:0; z-index:1000; backdrop-filter:saturate(140%) blur(8px);
+      background:linear-gradient(180deg, rgba(10,15,31,.85), rgba(10,15,31,.55));
+      border-bottom:1px solid rgba(255,255,255,.06)
+    }
+    .nav-inner{display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:.9rem 0}
+    .brand{display:flex; align-items:center; gap:.7rem; font-weight:700; letter-spacing:.5px}
+    .brand .logo{
+      width:38px; height:38px; border-radius:12px; background:var(--accent);
+      display:grid; place-items:center; box-shadow:0 8px 20px rgba(99,102,241,.35);
+      font-weight:800
+    }
+    nav ul{display:flex; gap:1.4rem; list-style:none; padding:0; margin:0}
+    nav a{color:var(--muted); font-weight:500}
+    nav a:hover{color:var(--txt)}
+    .mobile-toggle{display:none; cursor:pointer; padding:.4rem .6rem; border-radius:10px; border:1px solid rgba(255,255,255,.14)}
+    @media (max-width: 880px){
+      nav ul{display:none}
+      .mobile-toggle{display:block}
+      nav.open ul{display:flex; flex-direction:column; gap:.8rem; position:absolute; right:4%; top:64px; padding:1rem 1.2rem; background:rgba(15,21,48,.95); border:1px solid rgba(255,255,255,.08); border-radius:14px}
+    }
+    
+        .mobile-menu {
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="font-sans bg-[#d9caf5]">
+    <!-- Contact Header -->
+    <div class="bg-blue-900 text-white text-sm py-2 px-4">
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center">
+            <div class="flex items-center space-x-4 mb-2 md:mb-0">
+                <span class="flex items-center">
+                    <i class="fas fa-phone-alt mr-2"></i> (11) 1234-5678
+                </span>
+                <span class="flex items-center">
+                    <i class="fab fa-whatsapp mr-2"></i> (11) 98765-4321
+                </span>
+                <span class="flex items-center">
+                    <i class="fas fa-envelope mr-2"></i> contato@ivensstecnologia.com.br
+                </span>
+            </div>
+            <div class="flex space-x-4">
+                <a href="https://www.facebook.com/ivensstecnologia" target="_blank" class="hover:text-blue-300"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.instagram.com/ivensstecnologia" target="_blank" class="hover:text-blue-300"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.linkedin.com/company/ivensstecnologia" target="_blank" class="hover:text-blue-300"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header/Navigation -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center">
+                <i class="fas fa-server text-blue-600 text-3xl mr-2"></i>
+                <a href="#" class="text-2xl font-bold text-gray-800">IVENNS<span class="text-blue-600">TECNOLOGIA</span></a>
+            </div>
+            
+            <nav class="hidden md:flex space-x-8">
+                <a href="#home" class="nav-link text-gray-700 hover:text-blue-600 font-medium">Início</a>
+                <a href="#products" class="nav-link text-gray-700 hover:text-blue-600 font-medium">Produtos</a>
+                <a href="#services" class="nav-link text-gray-700 hover:text-blue-600 font-medium">Serviços</a>
+                <a href="#about" class="nav-link text-gray-700 hover:text-blue-600 font-medium">Sobre Nós</a>
+                <a href="#contact" class="nav-link text-gray-700 hover:text-blue-600 font-medium">Contato</a>
+            </nav>
+            
+            <div class="hidden md:flex items-center space-x-4">
+                <a href="#" class="text-gray-700 hover:text-blue-600"><i class="fas fa-search text-lg"></i></a>
+                <a href="#" class="text-gray-700 hover:text-blue-600"><i class="fas fa-user text-lg"></i></a>
+                <a href="#" class="text-gray-700 hover:text-blue-600 relative">
+                    <i class="fas fa-shopping-cart text-lg"></i>
+                    <span class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                </a>
+            </div>
+            
+            <button id="mobile-menu-button" class="md:hidden text-gray-700 focus:outline-none">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="mobile-menu hidden md:hidden bg-white border-t py-4 px-4 absolute w-full left-0 shadow-lg">
+            <div class="flex flex-col space-y-4">
+                <a href="#home" class="text-gray-700 hover:text-blue-600 font-medium">Início</a>
+                <a href="#products" class="text-gray-700 hover:text-blue-600 font-medium">Produtos</a>
+                <a href="#services" class="text-gray-700 hover:text-blue-600 font-medium">Serviços</a>
+                <a href="#about" class="text-gray-700 hover:text-blue-600 font-medium">Sobre Nós</a>
+                <a href="#contact" class="text-gray-700 hover:text-blue-600 font-medium">Contato</a>
+                <div class="pt-4 border-t flex justify-between">
+                    <a href="#" class="text-gray-700 hover:text-blue-600"><i class="fas fa-search text-lg"></i></a>
+                    <a href="#" class="text-gray-700 hover:text-blue-600"><i class="fas fa-user text-lg"></i></a>
+                    <a href="#" class="text-gray-700 hover:text-blue-600 relative">
+                        <i class="fas fa-shopping-cart text-lg"></i>
+                        <span class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-gradient text-white py-20 md:py-32">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row items-center">
+            <div class="md:w-1/2 mb-10 md:mb-0">
+                <h1 class="text-4xl md:text-5xl font-bold mb-6">Soluções completas em Storage e Servidores</h1>
+                <p class="text-xl mb-8 opacity-90">Peças de alta qualidade, servidores confiáveis e assistência técnica especializada para manter sua infraestrutura funcionando perfeitamente.</p>
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                    <a href="#products" class="bg-white text-blue-600 hover:bg-gray-100 font-bold py-3 px-6 rounded-lg text-center transition duration-300">Ver Produtos</a>
+                    <a href="#contact" class="border-2 border-white hover:bg-white hover:text-blue-600 font-bold py-3 px-6 rounded-lg text-center transition duration-300">Fale Conosco</a>
+                </div>
+            </div>
+            <div class="md:w-1/2 flex justify-center">
+                <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80" alt="Servidores e Storage" class="rounded-lg shadow-2xl max-w-full h-auto">
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="bg-[#d9caf5] py-16">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="flex flex-col items-center text-center p-6">
+                    <div class="bg-blue-100 p-4 rounded-full mb-4">
+                        <i class="fas fa-shield-alt text-blue-600 text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Garantia de Qualidade</h3>
+                    <p class="text-gray-600">Todos nossos produtos passam por rigorosos testes de qualidade para garantir máxima confiabilidade.</p>
+                </div>
+                <div class="flex flex-col items-center text-center p-6">
+                    <div class="bg-blue-100 p-4 rounded-full mb-4">
+                        <i class="fas fa-tools text-blue-600 text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Assistência Técnica</h3>
+                    <p class="text-gray-600">Equipe especializada pronta para resolver qualquer problema em seu storage ou servidores.</p>
+                </div>
+                <div class="flex flex-col items-center text-center p-6">
+                    <div class="bg-blue-100 p-4 rounded-full mb-4">
+                        <i class="fas fa-truck text-blue-600 text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Entrega Rápida</h3>
+                    <p class="text-gray-600">Entregamos em todo o Brasil com prazos curtos para que você não fique sem seu equipamento.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products" class="bg-gray-50 py-16">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Nossos Produtos</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Peças originais e compatíveis para os principais fabricantes de storage e servidores do mercado.</p>
+            </div>
+            
+            <div class="flex justify-center mb-8">
+                <div class="inline-flex rounded-md shadow-sm" role="group">
+                    <button type="button" class="category-btn px-4 py-2 text-sm font-medium rounded-l-lg bg-blue-600 text-white" data-category="all">
+                        Todos
+                    </button>
+                    <button type="button" class="category-btn px-4 py-2 text-sm font-medium bg-white text-gray-700 hover:bg-gray-50" data-category="storage">
+                        Peças Storage
+                    </button>
+                    <button type="button" class="category-btn px-4 py-2 text-sm font-medium bg-white text-gray-700 hover:bg-gray-50" data-category="server">
+                        Servidores
+                    </button>
+                    <button type="button" class="category-btn px-4 py-2 text-sm font-medium rounded-r-lg bg-white text-gray-700 hover:bg-gray-50" data-category="accessories">
+                        Acessórios
+                    </button>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                <!-- Product 1 -->
+                <div class="product-card bg-white rounded-lg overflow-hidden shadow-md transition duration-300" data-category="storage">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1591488320449-011701bb6704?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80" alt="HD para Storage" class="w-full h-48 object-cover">
+                        <span class="absolute top-2 right-2 bg-blue-600 text-white text-xs px-2 py-1 rounded">Storage</span>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-2">HD Enterprise 10TB SAS 12Gbps</h3>
+                        <p class="text-gray-600 text-sm mb-4">Para sistemas de storage Dell EMC, HPE, NetApp, IBM e outros.</p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-blue-600">preço sob consulta</span>
+                            <button onclick="window.open('https://wa.me/5511987654321?text=Olá,%20gostaria%20de%20informações%20sobre%20o%20produto%20HD%20Enterprise%2010TB%20SAS%2012Gbps', '_blank')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">Comprar</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 2 -->
+                <div class="product-card bg-white rounded-lg overflow-hidden shadow-md transition duration-300" data-category="server">
+                    <div class="relative">
+                        <img src="data:image/jpeg;base64,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">
+                        <span class="absolute top-2 right-2 bg-green-600 text-white text-xs px-2 py-1 rounded">Servidor</span>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-2">Servidor Dell PowerEdge R740</h3>
+                        <p class="text-gray-600 text-sm mb-4">2x Xeon Silver 4210, 64GB RAM, 4x 480GB SSD, RAID.</p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-blue-600">preço sob consulta</span>
+                            <button onclick="window.open('https://wa.me/5511987654321?text=Olá,%20gostaria%20de%20informações%20sobre%20o%20produto%20Servidor%20Dell%20PowerEdge%20R740', '_blank')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">Comprar</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 3 -->
+                <div class="product-card bg-white rounded-lg overflow-hidden shadow-md transition duration-300" data-category="storage">
+                    <div class="relative">
+                        <img src="data:image/jpeg;base64,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">
+                        <span class="absolute top-2 right-2 bg-blue-600 text-white text-xs px-2 py-1 rounded">Storage</span>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-2">Controladora RAID HPE Smart Array P408i-a</h3>
+                        <p class="text-gray-600 text-sm mb-4">Compatível com servidores HPE ProLiant Gen9/Gen10.</p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-blue-600">preço sob consulta</span>
+                            <button onclick="window.open('https://wa.me/5511987654321?text=Olá,%20gostaria%20de%20informações%20sobre%20o%20produto%20Controladora%20RAID%20HPE%20Smart%20Array%20P408i-a', '_blank')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">Comprar</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 4 -->
+                <div class="product-card bg-white rounded-lg overflow-hidden shadow-md transition duration-300" data-category="accessories">
+                    <div class="relative">
+                        <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxMTEhUSEhIWFRUXGBgbGRgXFRcYFxgVGhUXFxcaGB8aHSggGxolGxUVITEhKSkrLi4uFx8zODMtNygtLisBCgoKDg0OFRAQGC8dFx0tLS03LTYtLS0tLS0rLS0rLSstKys3LSsrLS0rLS0tLSsrLSstKy0tKystKystLS0tK//AABEIANcA6wMBIgACEQEDEQH/xAAcAAEAAgIDAQAAAAAAAAAAAAAABgcEBQECAwj/xABCEAABAwIDBQUFBwMCBAcAAAABAAIDBBEFITEGEkFRYQcicYGREzKhscEUI0JSktHwM3LhYqJDY7LCFSQ0ZIKjs//EABoBAQEBAQEBAQAAAAAAAAAAAAABAgMFBAb/xAAkEQEBAAIBBAIBBQAAAAAAAAAAAQIRAwQSITFBUSIFEzJCcf/aAAwDAQACEQMRAD8AvFERAREQEREBERAREQEREBERAREQEREBERAREQEREBERARFE9s9toqIFo78tr7oOn93JBLEXSB92tPMA+oXdAREQEREBERAREQEREBERAREQEREBERAREQEREBF4VVZHGN6R4aOpsotinaDTR5MBkPoPVBMFwSqbxntUm0Zus8Myosds6udxvK/d8bKbFvbd7YtpI9yIh0zhlyaOZVGV1Q+RznvcXONySeJXvV1BcSXEkniTnZYkju4SNbH5IPqKl9xn9o+QXqvKk9xn9rfkF6qgiIgIiICIiAiIgIiICIiAiIgIiICIiAi4JUS2j21jhuyGz38/wj90Emra2OJpfI8NHVQTH+0HVtOLf63a+QUJxnGpJXF8ryfkPAKOT1LnmzUGzxnaJ7yS95eepUfmnkfxsFKtnNhqipzDbN4udkFZOB9nFNDZ0n3ruuQ/dQUjBgkjmlwjcQNXEWATJosFYvabtA1p+x09msb7wbYAu8v5qqzcb+fyTQ7b5J8fkrc7PNi4Jab29TFvGQ3aCSLMGQ055qs9m8NNTPHEPxuA8GD3j6L6TpKdsbGxtFmtAA8ALIPVrbAAaBcoioIiICIiAiIgIiICIiAiIgIi1O0+KfZ6d0n4tG/3HL/K1hhc8pjPdZzymONyvqMuuxGOIXe63TivDD8dp5nbkcgLgL7uhsqNxfaCWZxG8TfjxK99gKlwxCCx1cQfAtN162f6ZMeO25flI8/Hrsss5JPC/ViYliMcDC+VwaPiTyA4rVbRbUxUwLQQ+T8oOQ/u/ZVbjOMyTvL5HX6cAOQC8jT0m62n2yknuyO7I+Q1Pj+yhlVWWXjVVY0GZUh2O2HlqyJZbsivqdXdGj66INBheEVFW/djYXeGg6k6AK1tluzuKAB89pH8vwj91LsMw2KnYI4WBrRy1J5k8SstQdWMAAAAAGgGQC0W2mPCkpnPv3zk0dVvXvABJyA1VBdoO0Zq6lwafu47hvW2pQRuqmdI8vcblxJJWMc/F2nQL0t8deg4BetHTOke1jBd8hDWjxRFldjGDXdJVEZD7tnjq4j4BWytZs3hLaWmjgb+BufVxzcfVbNFEREBERAREQEREBERARFw5wGZNkHK4JWnrdpIY3btnPPHcG8R4gaKJ43ilTV3ZTPZa3uAuZJbrvAfNdeHjnJlq5Sf65cvJcMdzG1Icf2xgpwQDvv5NOQ8Sqt2n2pmqQd42bwaNAsfEMKqYz97FIOpaSPUZLU1UDiAOZX6Hg6fpunx7ty37eHyc3Uc+XbZZPpmbKvYPtD32JERDAfzONr/AA+Kx8PpXNeJN4tIzBBzuu9JRBg5nmvWWWy8zqetuVsw9V6nB03bJ3e3tU1JzJPmVrJaguO60ei5iikneI2NJJNgBmSre2I2GZTASzgOm4DVsfhzd14cF51fY0Ww/Z1pPWDLVsXE9X8h09VaLGAAAAADIAZADouyLKiIsXEa9kLC+R1h8SeQ5lBEe1LaL7PT+yYbSS5dQ3iVSHj4n6BTXaa1RUOlmJc46MBsGt4Ba10EQ/4bfiqI20fHMqyeyDAfaSurHjux92PLVxGZ8h8+iiMtAx1tw7tyAelzZX9geFspoGQR+6wAeJ4nzKgzwiIgIiICIiAiIgIiIC4JXK8ZXXUt0OHTclr6mkLwQ8lwPJxabdLfus2yWWNjXR0jY27sQEQ4ncubdDpfqbrIghaMxmTqdSfErJXBiaeH0KbHRwWmxvDKPd3p42C+QNrOJ5N3cyVu/ZcnHzzWM+hbviQsa54Fg7iB0votbTSta7Z+O+8yCpiYb2NhILcLjIj1Wvn2IqHtEkThIzlZzH/pcPqrVmpDI/vOdu/k0b4m2bvDRa/GMaDPuYM36F3Bv+U2rvsZsrFSRh478rgLvI0B/C3kPiVJliYRG5sMYcS526Lk63OazFoEREHSaUNaXONgASSdABqqqxzGjUSmQm0bTZg4Ac8/xFbTtB2m3n/YIM3Ze1dwF8wzx0J8lAMRY/JrjcDhfK5srBlVFSwuPfbc9QseVuSwRC08FmYZTOdKyMZtcbeev0QSHYHADUTb7h92y1+ueQ87K4gtXs5hQp4GxjXVx6n9tFtFAREQEREBERAREQEReMtSBcAgkcAdPHkg5mfwXQFQ/aiixNx9pRVsbP8AlvhbYn+872XTd81GX7bYzR/+tw5szB+OG4y4klu+P9rVzvkWtdcEqA4P2vYdN3ZHPp3XsRIy4B6uZvAedlM8OxOCdu9BNHK3mx7XfIqaGVddgVwQiiuy6yPAFybDquk87WN3nGw/mQ5lRrEa50pto3gOfUoPXF8Wc8FkVwLe9xPhyCxsNw5rN2+bicvMi5+K4gizGS3GGwfeAn3tT0sOHorEb0BcrAxzFo6WF00psBoOLncGt6lVTs3t844g+Wpkf7ItcC1t3MD7t3WhvIAG51uRzXUXKsPFsSjp4nSyOsBpzJ4AcyVh0W1FHL7lQy/Jx3HejrFVntFDVYtUOk9oaShhuI3m4fKeMjRwBtkeVtb5WS30zllMZutXPiTWPfJbvyOLifE3+a1M2Ibx0WXh/ZeJ431LqiQw3IjcTm5rb3fmPdJ09eK1mzHZ8ZpCTUPbHYlpae8Rv7rSeGlz6LWePbN1jDlxyuo946gcRZWH2bYTvuEzhk0kjx3bD5k+SrmqwaWGZ9NK/f3BG9rrZljy6wPUbqvzZeh9jTRtIsSLkdT/AIsue9urbIiKgiIgIiICIiAi6veBqsSSUnoFm5aHtJUclq66tigbvyODQTlzc48GgZucssKO41slBUTNmle95bnu3N7EGzWkEBrczlbzBzXK5WtYyb8tjhOKsqASxrxa1w9hbYkXtf3SfAlZxjBXSPcYyzQGtaNGjQDkBmoTVY1WVk7qemZJTxtP9S7Q635n3Dg0E6MzJ1N9BnaWyJBjOyVHUj7+njeeDt0Bw8HCxHqoXiPY/GHe0oqmWnfwzLwPA3Dx+pWTh9O9kbWvkMjgM3kNaXHnZoAC12KY0GgtiIPN+oH9vPx9L8NSitKnbDEcGlbBWTQ1gc0kM9ofaBotYudu7zL8N7evY6are1HaoZGM+zU+6XsDi6U3Dd4XsGttvG3G44ZFUrtjUmStmcSSd6173uphg1F3Gae60ejA36LdRZeC1ktQ0ySvLzc2vYAZDQDILatjta/HQcT4LD2Zpy2nZYXJubeJ1PIdVIaal3czm7nyHIdFkeVJSbved73TQDkP3W1oYAO9xPyXWCC5udB81G+0Xaf7LD7GI/fyCw5sZoX+PAdbngt4wV/2q7RmpqPYRO+7hJaDwMmj39Q33R1vzUUoIQ0ZC3L+c1zO5jLbxsT0y87aarvFIHZtIPgQfktjI3l2dIS0sJO6dW3O6fEaLxuuQVdpZK3TtpKkwOpva/dlm5k1oc1trd0gZZc7rMwHaNsADTESGxtYLOH4SSDmOqjQK61Elh1Uy8+yYyeZEjnqRUVzZ4QbubA0h7Ra8biLdQS/5K8Aqc7P6A+1gDsy54cfBgL2/wDT8VcikUREVBERAREQFi4nViGJ8p0Y1zj/AGtaXG3WwWUo/wBoEm7htYf/AG0//wCL1L6GBgW2dHV29jUsc4/gJ3X/AKXWPwW/BXxi52d+StCi2irKGOIR1D37zQS2UmRujTlc7w97QELjn+Pl0ww7t6X6VwQqvwjtdYXBlTA5puBvRd9tzzGo46XU6wvaalqMopmk/lJs7zacwozfF02waNbJJIGgucQGjMk5AeK8qqqZG3fe6w6Zknk3mVD8SxF87s8mD3WDQdXfmd14cONyM7FcaMvcZdsfHg5/jyb/AKePHko/jeJiGMkgknIAZZ9SdAthFTkZuyH8/nNaDa6J33ZIyDwbdAb5+nkERV218cZrNyIZWZfI3LiASTfO9zp0CsvDKU2ADSAMrnK4vnu/QkeSrqGQVmJh7cw+VluoYGi/o26u2loNFrL4EmwWlDImDU7oueJy+HgtiBkTwAJPkvGjiJyGg4/Rc7S1AioqmTQMgld+mNx+iuOOx881W300sxmdI+N7hceze4BreDRYg7o/zqV7f+JSVLjM9xeXaOce88gW/SMhpzULjonv+8GQt3b5XA4/Ar1ET52N+8JLCcjq0m3nwXSI2VbBNcufGfEd4DwOdv0hYYdc9fPe+rvkvOM1cXuveRyvvD0N7L0OPv0ngZIPDdPxv9EGTFWyNyDyeh7w+Nz/ALgtnh1YX33gL8x8b6/NaiOrpJMt6SI8iN5t/O4+S2GG10Vv6g3tLE2IA0Gf8zVVtQu1LTe1kDeA18OP0HmuGNu3eGl7fP8AZb3Cqb2bLkd53wHAKCX9n5D6t4A/pR58g55buj9Id6hWMoF2TUhEdTORYyyi19d1rAW+GT7qepAREVBERAREQFFO1GYNwurubXhe0ZcS0hStQztfn3MJqjzYG/qkY36qUfKb1P8AapwDo2Dg0+gcG/RQyjY10jWnO7gPUgfVS3auQe2GeYb83OOS4cvw78X9qx9nRvVR49058jukfVeO0VI4vfKMmtcQDe2bSfd6gAL02NzqXH/Sf+pg+pWTFVOmxCmiJu01MTbcmmZtx4WuSpq90fLlq8vn6W7HTkQUrDcuFPEXEm5LzGLk31OQuVl0tJaxOZOgH8+Kxdq9pIaQGWY7z3G0cbffkN8g0cBnqvTZeWpMXtapgZLIbtjH/Dj4B3I5i/PxyW3RsXt3eF3fhA0H85rWY3h59hK45yOY4DoLaBSOmpLd52ZP8/n8Kz6fDg/N4u3g08fHp0STaKB7HcAL521D8mtBLL6ucWkXA4izjn4K+KTCze5G6OuvpwW5bGBoAPJdl07R1jYALAWCqDtZ2vbITRRP+6BtK4fjcPwD/S0jPr4Z2Ft3WSxUFQ+AP9ruWb7Npc4Fzg0uAAPuhxdfha6+aKp2/a5va/xVStmzdOQt/hR+lH/mj7D3PxX0txt56JUtcxpLXHl65fJZGGzGJoG5cHiNVUd5qaUOJaT6rj7fEBaV133NwBe3C2Qsu+I4sNwhl985aaDiV6YLBHGwZguOZP0CDXFjHEGOGTLO5bZp/wALrId4SvfGxttN1oF3HLn1v4kclvcRrdxhIOZyb4/4WhjoXPAYCd5xGXDxPzQTvY2m/wDKRF35nuA/+RA+AUhBuVq8PtBHT05zcW7uX+lu893hw8XBS7Y/CfbzAkXYzvO5H8rfM/AFRU22QpDHSsDhZzi5xHiTu/7d1bpEVUREQEREBERAVddu01sLkb+Z0Q/+1rv+1WKsavoIpmFk0bZGnItc0OBHgVKPjTDXtbNE5xsBIwk8gHgk+i3m1Na0y3Y4Ou1uYNxp/lXNtJ2LUcxL6cugdybmy/8AacvIbqrTaPsxraYEiP2rRxZmTpo3UnPQXWMpux0wy1LPtrdgW3lkPJrfi8H/ALV54U+YVsb6ZgfOH77G2BBeN5xuCQNAeIXhs3iP2aR4cw3IAIPdc0i+oI66LednM7f/ABWlyPvSWyz3nQSgeVzdYv8AJ89l/c2sXZvZFzJft1eRNWvza3WOAcA0cxf9rkm86paaw3na658P8/znfvSUgb33e962/c/wam+xp6e/ed5D6nqtybdHSmpb952nAfU/ss5EW5AREVGk22xFlPQ1MrzYCGS3VxYQ0DqSQF8qU8jZpIY3kMaZGhzt7INJsTfhkdV9C9ttI+SgBa0FkcofJc27m69mXM70jcvFfNNfFZxsMicgolWHiuxk99+B7S02s06AcTcXufRR6qo6iL+pA4DPvNzFhxPJaeiqqimcPZTPjccyGuIHmND5qU0u3VZGLTxxzN0uRuOPgWZf7VnehH9+Nzg4usQNDlkdNfJezqcag+ilIx3C6rKeIwuNrlzN4Zad5mdvEBe0OxNPJ95TVO8wEk7kgcPA20V7kQ9lOTqchz5lS3ZTCgPvXDo1RiR7N8tY4PaLG4NxfP6KfbPOvAzkBbzBzPrdal3B2NIXVIk/CyMtHV73An0DG/qVxbMYX9nga0jvu7z/ABPDyFh6qH7F4V7Wb2jh3I7Hxf8AhHlr5DmrGCK5RERRERAREQEREBERAXBF1yiDQ41shR1P9WBhPBwABHgRmB4EKJUHZa2mrYaqGUlsZcSxwBPejewWOVrFwOd9FZaKXGDHhg4u8hy/yshEV0CIiAiIgrTt3xxsVAaYX9pOWkW4Mjlje4+u6LdTyVFbLyQuqo/tLgGgOsXZND7d2/AfvZXd20bJVVWYZqZntfZNe1zARv8Aec03bci+mmqoHEMMkieWSsfG/wDLI0sd6OAUqJviOwjn3lglbIHEuvcZ5d0Nc3Ky01ThlRFk+J1rAXAuM9QLacrm3Doo9S1M0B3opHxnmxxHrY5qS4d2i1TMpmMnbzcNx/q3L4LGWG1l01rjG73gNbZchwC8X4e21w7hc/Ro5lTKLaHC6r+swwPOV3NyF+T2Z8eIC6YzhFHBA+pinbJlZgD2uG9e2VljtyjVsvwgrY5Bk0E3NrjmrcwKkc2GGLV9gCBqXnX4lVrgc1tw6nevbmd66v3YDCt+QzuHdjyb1kI+gP8AuHJd45xMsDw4QQtjGurjzedT9PABZ9lyiNCIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAsXEMOhnYWTxMlYfwvaHD0IWUiCusc7HMPmuYd+md/wAt12fpfcDysq7x3sWroruhMdS3k0+zk9HZH9S+iUQ0+NsUwCaB25NHJC78srHNv4Eix8Rda6SlcNR6Zr7VqaZkjSyRjXtOrXNDgfEHJQvGeyrD5rlkbqd3OJ1m/oN2+gCiafPuzGBvmqYIxn3mnLXLMDzNgvq7B6AQRMibwGZ5uObj6kqFbE9mgoao1D5xMA0iMbm6QXaudmQTYW8yrCVBERFEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREH/2Q==">
+                        <span class="absolute top-2 right-2 bg-purple-600 text-white text-xs px-2 py-1 rounded">Acessório</span>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-2">Cabo SAS SFF-8643 to SFF-8644 1m</h3>
+                        <p class="text-gray-600 text-sm mb-4">Para conexão entre controladoras e JBODs/expansores.</p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-blue-600">preço sob consulta</span>
+                            <button onclick="window.open('https://wa.me/5511987654321?text=Olá,%20gostaria%20de%20informações%20sobre%20o%20produto%20Cabo%20SAS%20SFF-8643%20to%20SFF-8644%201m', '_blank')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">Comprar</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 5 -->
+                <div class="product-card bg-white rounded-lg overflow-hidden shadow-md transition duration-300" data-category="server">
+                    <div class="relative">
+                        <img src="data:image/jpeg;base64,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">
+                        <span class="absolute top-2 right-2 bg-green-600 text-white text-xs px-2 py-1 rounded">Servidor</span>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-2">Servidor HPE ProLiant DL380 Gen10</h3>
+                        <p class="text-gray-600 text-sm mb-4">1x Xeon Gold 5218, 128GB RAM, 8x 1.2TB SAS 10K, P408i.</p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-blue-600">preço sob consulta</span>
+                            <button onclick="window.open('https://wa.me/5511987654321?text=Olá,%20gostaria%20de%20informações%20sobre%20o%20produto%20Servidor%20HPE%20ProLiant%20DL380%20Gen10', '_blank')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">Comprar</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 6 -->
+                <div class="product-card bg-white rounded-lg overflow-hidden shadow-md transition duration-300" data-category="storage">
+                    <div class="relative">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTFB8PZMTo2-SrTPz0YsfOFAKyo2oJbe0rFWA&s">
+                        <span class="absolute top-2 right-2 bg-blue-600 text-white text-xs px-2 py-1 rounded">Storage</span>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-2">SSD Enterprise 1.92TB SATA 6Gbps</h3>
+                        <p class="text-gray-600 text-sm mb-4">DWPD 1.0, para uso em storages e servidores.</p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-blue-600">preço sob consulta</span>
+                            <button onclick="window.open('https://wa.me/5511987654321?text=Olá,%20gostaria%20de%20informações%20sobre%20o%20produto%20SSD%20Enterprise%201.92TB%20SATA%206Gbps', '_blank')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">Comprar</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 7 -->
+                <div class="product-card bg-white rounded-lg overflow-hidden shadow-md transition duration-300" data-category="accessories">
+                    <div class="relative">
+                        <img src="data:image/jpeg;base64,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" alt="Bateria RAID" class="w-full h-48 object-cover">
+                        <span class="absolute top-2 right-2 bg-purple-600 text-white text-xs px-2 py-1 rounded">Acessório</span>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-2">Bateria para Controladora RAID</h3>
+                        <p class="text-gray-600 text-sm mb-4">Compatível com controladoras HPE, Dell, IBM.</p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-blue-600">preço sob consulta</span>
+                            <button onclick="window.open('https://wa.me/5511987654321?text=Olá,%20gostaria%20de%20informações%20sobre%20o%20produto%20Bateria%20para%20Controladora%20RAID', '_blank')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">Comprar</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 8 -->
+                <div class="product-card bg-white rounded-lg overflow-hidden shadow-md transition duration-300" data-category="server">
+                    <div class="relative">
+                        <img src="data:image/jpeg;base64,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">
+                        <span class="absolute top-2 right-2 bg-green-600 text-white text-xs px-2 py-1 rounded">Servidor</span>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-2">Servidor IBM/Lenovo SR650</h3>
+                        <p class="text-gray-600 text-sm mb-4">2x Xeon Silver 4210R, 64GB RAM, 8x 600GB SAS, RAID.</p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-blue-600">preço sob consulta</span>
+                            <button onclick="window.open('https://wa.me/5511987654321?text=Olá,%20gostaria%20de%20informações%20sobre%20o%20produto%20Servidor%20IBM/Lenovo%20SR650', '_blank')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">Comprar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12">
+                <a href="https://wa.me/5511987654321?text=Olá,%20gostaria%20de%20ver%20o%20catálogo%20completo%20de%20produtos" target="_blank" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">Ver Todos os Produtos</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Nossos Serviços</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Assistência técnica especializada para storages e servidores de todas as marcas.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Service 1 -->
+                <div class="service-card bg-[#d9caf5] rounded-lg overflow-hidden shadow-md p-6 transition duration-300">
+                    <div class="bg-blue-100 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
+                        <i class="fas fa-hdd text-blue-600 text-xl"></i>
+                    </div>
+                    <h3 class="font-bold text-xl mb-3">Recuperação de Dados</h3>
+                    <p class="text-gray-600 mb-4">Recuperamos seus dados de HDs, SSDs e sistemas RAID com as mais avançadas técnicas do mercado.</p>
+                    <ul class="text-gray-600 text-sm space-y-2 mb-4">
+                        <li class="flex items-center"><i class="fas fa-check text-blue-600 mr-2"></i> Storages com RAID corrompido</li>
+                        <li class="flex items-center"><i class="fas fa-check text-blue-600 mr-2"></i> HDs/SSDs com falhas físicas</li>
+                        <li class="flex items-center"><i class="fas fa-check text-blue-600 mr-2"></i> Sistemas de arquivos danificados</li>
+                    </ul>
+                    <a href="#contact" class="text-blue-600 font-medium inline-flex items-center">Saiba mais <i class="fas fa-arrow-right ml-1"></i></a>
+                </div>
+                
+                <!-- Service 2 -->
+                <div class="service-card bg-[#d9caf5] rounded-lg overflow-hidden shadow-md p-6 transition duration-300">
+                    <div class="bg-blue-100 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
+                        <i class="fas fa-tools text-blue-600 text-xl"></i>
+                    </div>
+                    <h3 class="font-bold text-xl mb-3">Manutenção de Storage</h3>
+                    <p class="text-gray-600 mb-4">Serviços especializados para storages Dell EMC, NetApp, HPE, IBM e outros fabricantes.</p>
+                    <ul class="text-gray-600 text-sm space-y-2 mb-4">
+                        <li class="flex items-center"><i class="fas fa-check text-blue-600 mr-2"></i> Substituição de controladoras</li>
+                        <li class="flex items-center"><i class="fas fa-check text-blue-600 mr-2"></i> Troca de discos e PSUs</li>
+                        <li class="flex items-center"><i class="fas fa-check text-blue-600 mr-2"></i> Atualização de firmware</li>
+                        <li class="flex items-center"><i class="fas fa-check text-blue-600 mr-2"></i> Migração de dados</li>
+                    </ul>
+                    <a href="#contact" class="text-blue-600 font-medium inline-flex items-center">Saiba mais <i class="fas fa-arrow-right ml-1"></i></a>
+                </div>
+                
+                <!-- Service 3 -->
+                <div class="service-card bg-[#d9caf5] rounded-lg overflow-hidden shadow-md p-6 transition duration-300">
+                    <div class="bg-blue-100 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
+                        <i class="fas fa-server text-blue-600 text-xl"></i>
+                    </div>
+                    <h3 class="font-bold text-xl mb-3">Manutenção de Servidores</h3>
+                    <p class="text-gray-600 mb-4">Reparo e manutenção preventiva/corretiva para servidores de todas as marcas.</p>
+                    <ul class="text-gray-600 text-sm space-y-2 mb-4">
+                        <li class="flex items-center"><i class="fas fa-check text-blue-600 mr-2"></i> Diagnóstico de hardware</li>
+                        <li class="flex items-center"><i class="fas fa-check text-blue-600 mr-2"></i> Substituição de placas e componentes</li>
+                        <li class="flex items-center"><i class="fas fa-check text-blue-600 mr-2"></i> Configuração de RAID</li>
+                        <li class="flex items-center"><i class="fas fa-check text-blue-600 mr-2"></i> Otimização de performance</li>
+                    </ul>
+                    <a href="#contact" class="text-blue-600 font-medium inline-flex items-center">Saiba mais <i class="fas fa-arrow-right ml-1"></i></a>
+                </div>
+                
+                <!-- Service 4 -->
+                <div class="service-card bg-[#d9caf5] rounded-lg overflow-hidden shadow-md p-6 transition duration-300">
+                    <div class="bg-blue-100 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
+                        <i class="fas fa-network-wired text-blue-600 text-xl"></i>
+                    </div>
+                    <h3 class="font-bold text-xl mb-3">Virtualização e Cloud</h3>
+                    <p class="text-gray-600 mb-4">Implementação e migração para ambientes virtualizados e cloud híbrida.</p>
+                    <ul class="text-gray-600 text-sm space-y-2 mb-4">
+                        <li class="flex items-center"><i class="fas fa-check text-blue-600 mr-2"></i> VMware, Hyper-V, Proxmox</li>
+                        <li class="flex items-center"><i class="fas fa-check text-blue-600 mr-2"></i> Migração P2V e V2V</li>
+                        <li class="flex items-center"><i class="fas fa-check text-blue-600 mr-2"></i> Integração com AWS/Azure</li>
+                        <li class="flex items-center"><i class="fas fa-check text-blue-600 mr-2"></i> Backup de VMs</li>
+                    </ul>
+                    <a href="#contact" class="text-blue-600 font-medium inline-flex items-center">Saiba mais <i class="fas fa-arrow-right ml-1"></i></a>
+                </div>
+                
+                <!-- Service 5 -->
+                <div class="service-card bg-[#d9caf5] rounded-lg overflow-hidden shadow-md p-6 transition duration-300">
+                    <div class="bg-blue-100 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
+                        <i class="fas fa-database text-blue-600 text-xl"></i>
+                    </div>
+                    <h3 class="font-bold text-xl mb-3">Backup e Disaster Recovery</h3>
+                    <p class="text-gray-600 mb-4">Soluções completas para proteção de dados e recuperação de desastres.</p>
+                    <ul class="text-gray-600 text-sm space-y-2 mb-4">
+                        <li class="flex items-center"><i class="fas fa-check text-blue-600 mr-2"></i> Implementação de soluções de backup</li>
+                        <li class="flex items-center"><i class="fas fa-check text-blue-600 mr-2"></i> Disaster Recovery as a Service</li>
+                        <li class="flex items-center"><i class="fas fa-check text-blue-600 mr-2"></i> Testes de recuperação</li>
+                        <li class="flex items-center"><i class="fas fa-check text-blue-600 mr-2"></i> Armazenamento em fita LTO</li>
+                    </ul>
+                    <a href="#contact" class="text-blue-600 font-medium inline-flex items-center">Saiba mais <i class="fas fa-arrow-right ml-1"></i></a>
+                </div>
+                
+                <!-- Service 6 -->
+                <div class="service-card bg-[#d9caf5] rounded-lg overflow-hidden shadow-md p-6 transition duration-300">
+                    <div class="bg-blue-100 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
+                        <i class="fas fa-headset text-blue-600 text-xl"></i>
+                    </div>
+                    <h3 class="font-bold text-xl mb-3">Suporte Remoto e Presencial</h3>
+                    <p class="text-gray-600 mb-4">Suporte técnico especializado remoto ou presencial conforme sua necessidade.</p>
+                    <ul class="text-gray-600 text-sm space-y-2 mb-4">
+                        <li class="flex items-center"><i class="fas fa-check text-blue-600 mr-2"></i> Contrato de suporte 24x7</li>
+                        <li class="flex items-center"><i class="fas fa-check text-blue-600 mr-2"></i> SLA personalizado</li>
+                        <li class="flex items-center"><i class="fas fa-check text-blue-600 mr-2"></i> Monitoramento proativo</li>
+                        <li class="flex items-center"><i class="fas fa-check text-blue-600 mr-2"></i> Plantão técnico</li>
+                    </ul>
+                    <a href="#contact" class="text-blue-600 font-medium inline-flex items-center">Saiba mais <i class="fas fa-arrow-right ml-1"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col lg:flex-row items-center">
+                <div class="lg:w-1/2 mb-10 lg:mb-0 lg:pr-10">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-6">Sobre a IVENNS TECNOLOGIA</h2>
+                    <p class="text-gray-600 mb-4">Fundada em 2020, a IVENNS TECNOLOGIA é referência em peças para storage, servidores e assistência técnica especializada.</p>
+                    <p class="text-gray-600 mb-6">Nossa equipe é composta por profissionais certificados pelas principais fabricantes do mercado, com mais de 15 anos de experiência em infraestrutura de TI.</p>
+                    
+                    <div class="grid grid-cols-2 gap-6 mb-8">
+                        <div>
+                            <h4 class="font-bold text-blue-600 text-xl mb-2">+5.000</h4>
+                            <p class="text-gray-600">Clientes atendidos</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-blue-600 text-xl mb-2">+15</h4>
+                            <p class="text-gray-600">Anos de experiência</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-blue-600 text-xl mb-2">98%</h4>
+                            <p class="text-gray-600">Taxa de satisfação</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-blue-600 text-xl mb-2">24/7</h4>
+                            <p class="text-gray-600">Suporte disponível</p>
+                        </div>
+                    </div>
+                    
+                    <a href="#contact" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">Fale Conosco</a>
+                </div>
+                
+                <div class="lg:w-1/2">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="rounded-lg overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1552664730-d307ca884974?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80" alt="Nossa equipe" class="w-full h-full object-cover">
+                        </div>
+                        <div class="rounded-lg overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80" alt="Nosso laboratório" class="w-full h-full object-cover">
+                        </div>
+                        <div class="rounded-lg overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1521791136064-7986c2920216?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1738&q=80" alt="Nossos certificados" class="w-full h-full object-cover">
+                        </div>
+                        <div class="rounded-lg overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80" alt="Nosso estoque" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Brands Section -->
+    <section class="py-12 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-8">
+                <h3 class="text-xl font-medium text-gray-600">Trabalhamos com as principais marcas do mercado</h3>
+            </div>
+            <div class="flex flex-wrap justify-center items-center gap-8 md:gap-16">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Dell_logo_2016.svg/2560px-Dell_logo_2016.svg.png" alt="Dell" class="h-8 opacity-60 hover:opacity-100 transition duration-300">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/HP_logo_2012.svg/1200px-HP_logo_2012.svg.png" alt="HPE" class="h-8 opacity-60 hover:opacity-100 transition duration-300">
+                <img src="https://wallpapers.com/images/high/lenovo-logo-red-circle-lzy3spbdak4fcvus-2.png" alt="Lenovo" class="h-8 opacity-60 hover:opacity-100 transition duration-300">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/IBM_logo.svg/1280px-IBM_logo.svg.png" alt="IBM" class="h-8 opacity-60 hover:opacity-100 transition duration-300">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/e/e8/NetApp_logo_2020.svg" alt="NetApp" class="h-8 opacity-60 hover:opacity-100 transition duration-300">
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-16 bg-[#d9caf5]">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Entre em Contato</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Tire suas dúvidas, solicite um orçamento ou agende uma visita técnica.</p>
+            </div>
+            
+            <div class="flex flex-col lg:flex-row">
+                <div class="lg:w-1/2 mb-10 lg:mb-0 lg:pr-10">
+                    <form class="bg-[#d9caf5] p-6 rounded-lg shadow-md">
+                        <div class="mb-4">
+                            <label for="name" class="block text-gray-700 font-medium mb-2">Nome</label>
+                            <input type="text" id="name" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+                        </div>
+                        <div class="mb-4">
+                            <label for="email" class="block text-gray-700 font-medium mb-2">E-mail</label>
+                            <input type="email" id="email" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+                        </div>
+                        <div class="mb-4">
+                            <label for="phone" class="block text-gray-700 font-medium mb-2">Telefone</label>
+                            <input type="tel" id="phone" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+                        </div>
+                        <div class="mb-4">
+                            <label for="subject" class="block text-gray-700 font-medium mb-2">Assunto</label>
+                            <select id="subject" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+                                <option value="">Selecione...</option>
+                                <option value="sales">Venda de produtos</option>
+                                <option value="support">Assistência técnica</option>
+                                <option value="recovery">Recuperação de dados</option>
+                                <option value="other">Outros assuntos</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label for="message" class="block text-gray-700 font-medium mb-2">Mensagem</label>
+                            <textarea id="message" rows="4" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Enviar Mensagem</button>
+                    </form>
+                </div>
+                
+                <div class="lg:w-1/2">
+                    <div class="bg-[#d9caf5] p-6 rounded-lg shadow-md h-full">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6">Informações de Contato</h3>
+                        
+                        <div class="space-y-6">
+                            <div class="flex items-start">
+                                <div class="bg-blue-100 p-2 rounded-full mr-4">
+                                    <i class="fas fa-map-marker-alt text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-800 mb-1">Endereço</h4>
+                                    <p class="text-gray-600">Av. Paulista, 1000 - 10º Andar<br>São Paulo - SP, 01310-100</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="bg-blue-100 p-2 rounded-full mr-4">
+                                    <i class="fas fa-phone-alt text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-800 mb-1">Telefones</h4>
+                                    <p class="text-gray-600">(11) 1234-5678<br>(11) 98765-4321 (WhatsApp)</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="bg-blue-100 p-2 rounded-full mr-4">
+                                    <i class="fas fa-envelope text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-800 mb-1">E-mail</h4>
+                                    <p class="text-gray-600">contato@IVENNS_TECNOLOGIA.com.br<br>suporte@IVENNS_TECNOLOGIA.com.br</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="bg-blue-100 p-2 rounded-full mr-4">
+                                    <i class="fas fa-clock text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-800 mb-1">Horário de Atendimento</h4>
+                                    <p class="text-gray-600">Segunda a Sexta: 8h às 18h<br>Sábado: 9h às 13h<br>Plantão 24h para emergências</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8">
+                            <h4 class="font-bold text-gray-800 mb-4">Siga-nos nas redes sociais</h4>
+                            <div class="flex space-x-4">
+                                <a href="https://www.facebook.com/ivensstecnologia" target="_blank" class="bg-blue-600 text-white p-2 rounded-full w-10 h-10 flex items-center justify-center hover:bg-blue-700 transition duration-300"><i class="fab fa-facebook-f"></i></a>
+                                <a href="https://twitter.com/ivensstecnologia" target="_blank" class="bg-blue-400 text-white p-2 rounded-full w-10 h-10 flex items-center justify-center hover:bg-blue-500 transition duration-300"><i class="fab fa-twitter"></i></a>
+                                <a href="https://www.instagram.com/ivensstecnologia" target="_blank" class="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-2 rounded-full w-10 h-10 flex items-center justify-center hover:from-purple-700 hover:to-pink-700 transition duration-300"><i class="fab fa-instagram"></i></a>
+                                <a href="https://www.linkedin.com/company/ivensstecnologia" target="_blank" class="bg-blue-700 text-white p-2 rounded-full w-10 h-10 flex items-center justify-center hover:bg-blue-800 transition duration-300"><i class="fab fa-linkedin-in"></i></a>
+                                <a href="https://www.youtube.com/ivensstecnologia" target="_blank" class="bg-red-600 text-white p-2 rounded-full w-10 h-10 flex items-center justify-center hover:bg-red-700 transition duration-300"><i class="fab fa-youtube"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="py-12 bg-blue-600 text-white">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-2xl font-bold mb-4">Assine nossa newsletter</h2>
+            <p class="max-w-2xl mx-auto mb-6 opacity-90">Receba promoções exclusivas, novidades sobre produtos e dicas técnicas em seu e-mail.</p>
+            <div class="max-w-md mx-auto flex">
+                <input type="email" placeholder="Seu melhor e-mail" class="flex-grow px-4 py-3 rounded-l-lg focus:outline-none text-gray-800">
+                <button class="bg-blue-800 hover:bg-blue-900 px-6 py-3 rounded-r-lg font-medium transition duration-300">Assinar</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-400 py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-server text-blue-600 text-2xl mr-2"></i>
+                        <span class="text-xl font-bold text-white">IVENNS<span class="text-blue-600">TECNOLOGIA</span></span>
+                    </div>
+                    <p class="mb-4">Soluções completas em peças para storage, servidores e assistência técnica especializada.</p>
+                    <div class="flex space-x-4">
+                        <a href="https://www.facebook.com/ivensstecnologia" target="_blank" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://twitter.com/ivensstecnologia" target="_blank" class="text-gray-400 hover:text-white"><i class="fab fa-twitter"></i></a>
+                        <a href="https://www.instagram.com/ivensstecnologia" target="_blank" class="text-gray-400 hover:text-white"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.linkedin.com/company/ivensstecnologia" target="_blank" class="text-gray-400 hover:text-white"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-white font-bold text-lg mb-4">Links Úteis</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-white transition duration-300">Política de Privacidade</a></li>
+                        <li><a href="#" class="hover:text-white transition duration-300">Termos de Serviço</a></li>
+                        <li><a href="#" class="hover:text-white transition duration-300">Garantia e Trocas</a></li>
+                        <li><a href="#" class="hover:text-white transition duration-300">Trabalhe Conosco</a></li>
+                        <li><a href="#" class="hover:text-white transition duration-300">Blog Técnico</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-white font-bold text-lg mb-4">Produtos</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-white transition duration-300">Peças para Storage</a></li>
+                        <li><a href="#" class="hover:text-white transition duration-300">Servidores</a></li>
+                        <li><a href="#" class="hover:text-white transition duration-300">Discos e SSDs</a></li>
+                        <li><a href="#" class="hover:text-white transition duration-300">Controladoras RAID</a></li>
+                        <li><a href="#" class="hover:text-white transition duration-300">Acessórios</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-white font-bold text-lg mb-4">Serviços</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-white transition duration-300">Recuperação de Dados</a></li>
+                        <li><a href="#" class="hover:text-white transition duration-300">Manutenção de Storage</a></li>
+                        <li><a href="#" class="hover:text-white transition duration-300">Manutenção de Servidores</a></li>
+                        <li><a href="#" class="hover:text-white transition duration-300">Virtualização e Cloud</a></li>
+                        <li><a href="#" class="hover:text-white transition duration-300">Backup e Disaster Recovery</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center">
+                <p>&copy; 2023 IVENNS TECNOLOGIA. Todos os direitos reservados.</p>
+                <p class="mt-2 text-sm">CNPJ: 12.345.678/0001-99</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button id="back-to-top" class="fixed bottom-6 right-6 bg-blue-600 text-white p-3 rounded-full shadow-lg opacity-0 invisible transition-all duration-300">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script>
+        // Mobile Menu Toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // Product Category Filter
+        const categoryButtons = document.querySelectorAll('.category-btn');
+        const productCards = document.querySelectorAll('.product-card');
+        
+        categoryButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons
+                categoryButtons.forEach(btn => {
+                    btn.classList.remove('bg-blue-600', 'text-white');
+                    btn.classList.add('bg-white', 'text-gray-700', 'hover:bg-gray-50');
+                });
+                
+                // Add active class to clicked button
+                button.classList.remove('bg-white', 'text-gray-700', 'hover:bg-gray-50');
+                button.classList.add('bg-blue-600', 'text-white');
+                
+                const category = button.dataset.category;
+                
+                // Filter products
+                productCards.forEach(card => {
+                    if (category === 'all' || card.dataset.category === category) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+        
+        // Back to Top Button
+        const backToTopButton = document.getElementById('back-to-top');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopButton.classList.remove('opacity-0', 'invisible');
+                backToTopButton.classList.add('opacity-100', 'visible');
+            } else {
+                backToTopButton.classList.remove('opacity-100', 'visible');
+                backToTopButton.classList.add('opacity-0', 'invisible');
+            }
+        });
+        
+        backToTopButton.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                    
+                    // Close mobile menu if open
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                }
+            });
+        });
+    </script>

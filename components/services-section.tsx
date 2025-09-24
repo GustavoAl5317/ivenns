@@ -2,10 +2,24 @@
 
 import { useEffect, useMemo, useState } from "react"
 import { motion, useReducedMotion, type Variants, type Transition } from "framer-motion"
-import { Check, Cloud, Headphones, Shield, Workflow, Layers, Rocket, Sparkles, Package, MessageCircle } from "lucide-react"
+import {
+  Check,
+  Cloud,
+  Headphones,
+  Shield,
+  Workflow,
+  Layers,
+  Rocket,
+  Sparkles,
+  Package,
+  MessageCircle,
+} from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 
+/* =========================
+   Tipos
+========================= */
 export interface Service {
   id: string
   title: string
@@ -25,6 +39,9 @@ export interface Service {
   } | null
 }
 
+/* =========================
+   Ícones
+========================= */
 const ICONS: Record<string, React.ComponentType<any>> = {
   cloud: Cloud,
   headphones: Headphones,
@@ -39,6 +56,9 @@ function pickIcon(name?: string) {
   return ICONS[name.toLowerCase()] ?? Cloud
 }
 
+/* =========================
+   Props
+========================= */
 type ServicesSectionProps = {
   id?: string
   heading?: string
@@ -49,7 +69,9 @@ type ServicesSectionProps = {
   api?: string
 }
 
-// Número do WhatsApp (ex: 55DDDNUMERO). Defina em .env como NEXT_PUBLIC_WHATSAPP_PHONE
+/* =========================
+   WhatsApp
+========================= */
 const WHATSAPP_PHONE = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || "5511913211958"
 
 function buildWhatsAppLink(serviceTitle: string) {
@@ -57,6 +79,41 @@ function buildWhatsAppLink(serviceTitle: string) {
   return `https://wa.me/${WHATSAPP_PHONE}?text=${msg}`
 }
 
+/* =========================
+   Helpers HTML
+========================= */
+function isProbablyHtml(s?: string) {
+  if (!s) return false
+  return /<\/?[a-z][\s\S]*>/i.test(s)
+}
+function basicSanitize(html: string) {
+  return html
+    .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "")
+    .replace(/\son\w+="[^"]*"/gi, "")
+    .replace(/\son\w+='[^']*'/gi, "")
+    .replace(/javascript:\s*/gi, "")
+}
+function HtmlDescription({ html }: { html: string }) {
+  const safe = basicSanitize(html)
+  return (
+    <div
+      className="
+        text-sm text-muted-foreground space-y-2
+        [&_ul]:list-disc [&_ul]:pl-5
+        [&_ol]:list-decimal [&_ol]:pl-5
+        [&_h2]:text-base [&_h2]:font-semibold [&_h2]:text-foreground [&_h2]:mt-3
+        [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-foreground
+        [&_a]:underline [&_a]:underline-offset-2
+        [&_p]:leading-relaxed
+      "
+      dangerouslySetInnerHTML={{ __html: safe }}
+    />
+  )
+}
+
+/* =========================
+   Seção
+========================= */
 export default function ServicesSection({
   id = "servicos",
   heading = "Nossos Serviços",
@@ -70,7 +127,6 @@ export default function ServicesSection({
   const [services, setServices] = useState<Service[] | null>(null)
   const [loading, setLoading] = useState(true)
 
-  // DEBUG por query: /?debug=1
   const DEBUG = useMemo(() => {
     if (typeof window === "undefined") return false
     return new URLSearchParams(window.location.search).has("debug")
@@ -83,87 +139,55 @@ export default function ServicesSection({
     const label = `[ServicesSection]`
     const t0 = performance.now()
 
-    console.log(`${label} mount -> api=`, api, `limit=`, limit)
-
     const load = async () => {
       for (let i = 0; i < delays.length; i++) {
         const attempt = i + 1
         try {
-          if (delays[i]) {
-            console.log(`${label} attempt ${attempt}: waiting ${delays[i]}ms before fetch`)
-            await new Promise((r) => setTimeout(r, delays[i]))
-          }
+          if (delays[i]) await new Promise((r) => setTimeout(r, delays[i]))
 
-          console.log(`${label} attempt ${attempt}: fetching`, api)
           const res = await fetch(api, {
             cache: "no-store",
             credentials: "same-origin",
             signal: ac.signal,
           })
 
-          console.log(`${label} attempt ${attempt}: status=`, res.status, res.statusText)
-          console.log(`${label} attempt ${attempt}: content-type=`, res.headers.get("content-type"))
-
           if (!res.ok) throw new Error(`HTTP ${res.status}`)
 
           const textBody = await res.text()
-          console.log(`${label} attempt ${attempt}: raw length=`, textBody?.length ?? 0)
-
           let parsed: unknown = []
-          if (textBody && textBody.trim().length > 0) {
-            parsed = JSON.parse(textBody)
-          } else {
-            console.warn(`${label} attempt ${attempt}: empty body (no JSON)`)
-          }
+          if (textBody && textBody.trim().length > 0) parsed = JSON.parse(textBody)
 
-          if (!mounted) {
-            console.log(`${label} attempt ${attempt}: unmounted after fetch, aborting setState`)
-            return
-          }
+          if (!mounted) return
 
           const list = Array.isArray(parsed) ? (parsed as Service[]) : []
-          console.log(`${label} attempt ${attempt}: parsed array?`, Array.isArray(parsed), `count=`, list.length)
-
           const filtered = (list || [])
             .filter((s) => s?.category?.toLowerCase?.() === "service")
             .filter((s) => s?.metadata?.visible !== false)
             .sort((a, b) => (a?.metadata?.order ?? 9999) - (b?.metadata?.order ?? 9999))
             .slice(0, limit)
 
-          console.log(`${label} attempt ${attempt}: filtered count=`, filtered.length, `limit=`, limit)
           setServices(filtered)
           setLoading(false)
-
-          const dt = (performance.now() - t0).toFixed(1)
-          console.log(`${label} success in attempt ${attempt} after ${dt}ms`)
+          if (DEBUG) console.log(`${label} success in ${attempt} after ${(performance.now() - t0).toFixed(1)}ms`)
           break
         } catch (e: any) {
           if (e?.name === "AbortError") {
-            console.warn(`${label} attempt ${attempt}: fetch aborted`)
             setLoading(false)
             return
           }
-          console.error(`${label} attempt ${attempt}: error ->`, e)
+          if (DEBUG) console.error(`${label} attempt ${attempt}:`, e)
         } finally {
-          if (i === delays.length - 1 && mounted) {
-            console.log(`${label} finished attempts. mounted=${mounted}`)
-            setLoading(false)
-          }
+          if (i === delays.length - 1 && mounted) setLoading(false)
         }
       }
     }
 
     load()
-
     return () => {
       mounted = false
       ac.abort()
-      console.log(`${label} unmount -> aborting fetch and cleanup`)
     }
-  }, [api, limit])
-
-  // Logs no render
-  console.log(`[ServicesSection][render] loading=`, loading, `services len=`, services?.length ?? null)
+  }, [api, limit, DEBUG])
 
   const container: Variants = {
     hidden: { opacity: 0 },
@@ -176,21 +200,19 @@ export default function ServicesSection({
     show: { opacity: 1, y: 0, transition: springTransition },
   }
 
-  // Pré-calcula os cards
   let cards: JSX.Element[] = []
   try {
     cards = (services ?? []).map((s, idx) => {
       const Icon = pickIcon(s.metadata?.icon)
-      if (!s?.id) console.warn(`[ServicesSection][render] item sem id no index`, idx, s)
       const waHref = buildWhatsAppLink(s.title)
       return (
-        <motion.div key={s.id ?? `s-${idx}`} variants={item}>
+        <motion.div key={s.id ?? `s-${idx}`} variants={item} className="h-full">
           <ServiceCard
             Icon={Icon}
             title={s.title}
             desc={s.description}
             bullets={s.metadata?.bullets ?? []}
-            href={waHref}                // <-- passa link do WhatsApp
+            href={waHref}
             imageUrl={s.image_url}
             highlight={s.metadata?.highlight}
             price={s.price}
@@ -199,32 +221,27 @@ export default function ServicesSection({
       )
     })
   } catch (e) {
-    console.error(`[ServicesSection][render] erro ao montar cards ->`, e)
+    if (DEBUG) console.error(`[ServicesSection] erro ao montar cards:`, e)
   }
 
   return (
-    <section id={id} className="relative py-20 sm:py-28">
-      {/* Fundo animado */}
+    <section id={id} className="relative py-16 sm:py-24">
+      {/* Fundo animado sutil */}
       <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="motion-ok absolute -top-24 -left-24 h-72 w-72 rounded-full blur-3xl opacity-30 bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 [animation:gradient-pan_12s_ease-in-out_infinite]" />
-        <div className="motion-ok absolute -bottom-24 -right-20 h-72 w-72 rounded-full blur-3xl opacity-25 bg-gradient-to-tr from-fuchsia-500 via-sky-500 to-violet-500 [animation:gradient-pan_14s_ease-in-out_infinite_reverse]" />
+        <div className="motion-ok absolute -top-24 -left-24 h-64 w-64 rounded-full blur-3xl opacity-20 bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 [animation:gradient-pan_12s_ease-in-out_infinite]" />
+        <div className="motion-ok absolute -bottom-24 -right-20 h-64 w-64 rounded-full blur-3xl opacity-15 bg-gradient-to-tr from-fuchsia-500 via-sky-500 to-violet-500 [animation:gradient-pan_14s_ease-in-out_infinite_reverse]" />
       </div>
 
       <div className="container relative mx-auto px-6">
-        <motion.div
-          variants={container}
-          initial="hidden"
-          animate="show"
-          className="mx-auto max-w-3xl text-center"
-        >
+        <motion.div variants={container} initial="hidden" animate="show" className="mx-auto max-w-3xl text-center">
           <motion.h2 variants={item} className="text-3xl/tight font-semibold tracking-tight sm:text-4xl">
             {heading}
           </motion.h2>
-          <motion.p variants={item} className="mt-3 text-muted-foreground">
+          <motion.p variants={item} className="mt-2 text-muted-foreground">
             {subheading}
           </motion.p>
 
-          <motion.div variants={item} className="mt-8">
+          <motion.div variants={item} className="mt-6">
             <Button asChild size="lg" className="group relative overflow-hidden bg-primary text-primary-foreground">
               <a href={ctaHref}>
                 <span className="relative z-10 flex items-center gap-2">
@@ -237,12 +254,12 @@ export default function ServicesSection({
           </motion.div>
         </motion.div>
 
-        {/* Grid */}
+        {/* Grid com cartões de mesma altura */}
         <motion.div
           variants={container}
           initial="hidden"
           animate="show"
-          className="mt-14 grid grid-cols-1 gap-6 sm:mt-16 sm:grid-cols-2 lg:grid-cols-3"
+          className="mt-12 grid grid-cols-1 gap-6 sm:mt-14 sm:grid-cols-2 lg:grid-cols-3"
         >
           {loading && Array.from({ length: limit }).map((_, i) => (
             <div key={i} className="h-60 rounded-xl border bg-muted/40 animate-pulse" />
@@ -257,32 +274,20 @@ export default function ServicesSection({
 
           {!loading && services && cards}
         </motion.div>
-
-        {/* Painel DEBUG */}
-        {DEBUG && (
-          <div className="mt-10 rounded-lg border p-4 text-sm">
-            <p className="mb-2 font-medium">DEBUG</p>
-            <ul className="mb-2 list-disc pl-5">
-              <li>loading: {String(loading)}</li>
-              <li>services length: {services?.length ?? "null"}</li>
-              <li>whatsapp: {WHATSAPP_PHONE}</li>
-            </ul>
-            <pre className="max-h-64 overflow-auto rounded bg-muted/40 p-3">
-              {JSON.stringify(services, null, 2)}
-            </pre>
-          </div>
-        )}
       </div>
     </section>
   )
 }
 
+/* =========================
+   Card (altura uniforme + botão alinhado)
+========================= */
 function ServiceCard({
   Icon,
   title,
   desc,
   bullets,
-  href,          // agora recebe o link do WhatsApp
+  href,
   imageUrl,
   highlight,
   price,
@@ -296,31 +301,38 @@ function ServiceCard({
   highlight?: boolean
   price?: number | null
 }) {
+  const hasHtml = isProbablyHtml(desc)
+
   return (
-    <Card className="group relative h-full overflow-hidden border-border/60 bg-card/80 backdrop-blur supports-[backdrop-filter]:bg-card/70">
+    <Card className="group relative h-full flex flex-col overflow-hidden border-border/60 bg-card/80 backdrop-blur supports-[backdrop-filter]:bg-card/70">
+      {/* imagem um pouco mais baixa para reduzir o card */}
       {imageUrl ? (
-        <div className="relative aspect-[16/9] overflow-hidden">
+        <div className="relative aspect-[16/8] overflow-hidden">
           <img src={imageUrl} alt="capa do serviço" className="h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-background/20 to-transparent" />
         </div>
       ) : null}
 
+      {/* brilho da borda no hover */}
       <div className="pointer-events-none absolute inset-0 rounded-[calc(var(--radius)_+_6px)] opacity-0 group-hover:opacity-100 transition-opacity">
         <div className="absolute inset-[-1px] rounded-[inherit] bg-[conic-gradient(from_180deg_at_50%_50%,theme(colors.indigo.500/.35),theme(colors.purple.500/.35),theme(colors.pink.500/.35),theme(colors.indigo.500/.35))] [mask:linear-gradient(#000_0_0)_content-box,linear-gradient(#000_0_0)] [mask-composite:exclude] p-[1px]" />
       </div>
 
-      <CardHeader className="relative">
-        <div className="mb-3 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white shadow-sm ring-1 ring-white/10">
-          <Icon className="h-6 w-6" />
+      <CardHeader className="relative pb-2">
+        <div className="mb-2 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white shadow-sm ring-1 ring-white/10">
+          <Icon className="h-5 w-5" />
         </div>
-        <CardTitle className="text-xl">{title}</CardTitle>
+        <CardTitle className="text-lg">{title}</CardTitle>
       </CardHeader>
 
-      <CardContent className="pb-6">
-        <p className="text-sm text-muted-foreground">{desc}</p>
+      {/* Conteúdo vira coluna flex: o botão fica alinhado no rodapé via mt-auto */}
+      <CardContent className="flex flex-1 flex-col gap-4 pt-0 pb-5">
+        <div className="text-sm text-muted-foreground">
+          {hasHtml ? <HtmlDescription html={desc} /> : <p className="leading-relaxed">{desc}</p>}
+        </div>
 
         {bullets.length > 0 && (
-          <ul className="mt-4 space-y-2 text-sm">
+          <ul className="space-y-2 text-sm">
             {bullets.map((b) => (
               <li key={b} className="flex items-start gap-2">
                 <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
@@ -330,7 +342,11 @@ function ServiceCard({
           </ul>
         )}
 
-        <div className="mt-6 flex items-center gap-3">
+        {/* spacer automático */}
+        <div className="mt-auto" />
+
+        {/* barra de ações (sempre no mesmo lugar) */}
+        <div className="flex items-center gap-3">
           <Button
             asChild
             variant={highlight ? "default" : "secondary"}

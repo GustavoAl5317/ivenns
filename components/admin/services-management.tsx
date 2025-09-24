@@ -1,22 +1,32 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+// import { Textarea } from "@/components/ui/textarea"; // ⛔️ substituído por TipTap
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Edit, Trash2, Package, DollarSign, Cloud, Headphones, Shield, Workflow, Layers, Rocket } from "lucide-react";
+import { Plus, Edit, Trash2, Package, DollarSign, Cloud, Headphones, Shield, Workflow, Layers, Rocket, Bold, Italic, List, ListOrdered, Link as LinkIcon, Heading } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Switch } from "@/components/ui/switch";
+
+/* ---------- TipTap imports ---------- */
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Placeholder from "@tiptap/extension-placeholder";
+import Link from "@tiptap/extension-link";
+import HeadingExt from "@tiptap/extension-heading";
+import BulletList from "@tiptap/extension-bullet-list";
+import OrderedList from "@tiptap/extension-ordered-list";
+import ListItem from "@tiptap/extension-list-item";
 
 interface Service {
   id: string;
   title: string;
-  description: string;
+  description: string; // agora guardará HTML do editor
   image_url: string | null;
   sku: string | null;
   category: string;
@@ -43,18 +53,111 @@ const ICON_OPTIONS = [
 
 type FormState = {
   title: string;
-  description: string;
+  description: string; // HTML do editor
   image_url: string;
   sku: string;
-  price: string;     // string no form; converto ao enviar
+  price: string;
   href: string;
-  bullets: string;   // CSV no form; converto ao enviar
+  bullets: string; // CSV
   icon: string;
   visible: boolean;
   highlight: boolean;
-  order: string;     // string no form; converto ao enviar
+  order: string;
 };
 
+/* ---------- Utils ---------- */
+function stripHtml(html: string) {
+  if (!html) return "";
+  return html.replace(/<[^>]+>/g, "");
+}
+
+/* ---------- RichTextEditor (TipTap) ---------- */
+function RichTextEditor({
+  value,
+  onChange,
+  placeholder = "Descreva seu serviço. Use listas para tópicos, títulos, etc.",
+}: {
+  value: string;
+  onChange: (html: string) => void;
+  placeholder?: string;
+}) {
+  const editor = useEditor({
+    extensions: [
+      StarterKit.configure({
+        heading: false, // usaremos o HeadingExt abaixo
+      }),
+      HeadingExt.configure({
+        levels: [2, 3, 4],
+      }),
+      Placeholder.configure({
+        placeholder,
+      }),
+      Link.configure({
+        openOnClick: false,
+        autolink: true,
+        HTMLAttributes: { rel: "noopener noreferrer", target: "_blank" },
+      }),
+      BulletList,
+      OrderedList,
+      ListItem,
+    ],
+    content: value || "",
+    editorProps: {
+      attributes: {
+        class:
+          "min-h-[140px] w-full rounded-md border bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 prose prose-sm max-w-none dark:prose-invert",
+      },
+    },
+    onUpdate: ({ editor }) => {
+      onChange(editor.getHTML());
+    },
+  });
+
+  const setLink = useCallback(() => {
+    const url = window.prompt("URL do link:");
+    if (url) editor?.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
+  }, [editor]);
+
+  if (!editor) return null;
+
+  const isActive = (name: string, attrs?: any) => editor.isActive(name as any, attrs);
+
+  return (
+    <div className="space-y-2">
+      {/* toolbar */}
+      <div className="flex flex-wrap items-center gap-1 rounded-md border bg-muted/50 p-1">
+        <Button type="button" variant={isActive("bold") ? "default" : "ghost"} size="icon" onClick={() => editor.chain().focus().toggleBold().run()} aria-label="Negrito">
+          <Bold className="h-4 w-4" />
+        </Button>
+        <Button type="button" variant={isActive("italic") ? "default" : "ghost"} size="icon" onClick={() => editor.chain().focus().toggleItalic().run()} aria-label="Itálico">
+          <Italic className="h-4 w-4" />
+        </Button>
+        <div className="mx-1 h-5 w-px bg-border" />
+        <Button type="button" variant={isActive("heading", { level: 2 }) ? "default" : "ghost"} size="sm" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}>
+          <Heading className="mr-1 h-4 w-4" /> H2
+        </Button>
+        <Button type="button" variant={isActive("heading", { level: 3 }) ? "default" : "ghost"} size="sm" onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}>
+          <Heading className="mr-1 h-4 w-4" /> H3
+        </Button>
+        <div className="mx-1 h-5 w-px bg-border" />
+        <Button type="button" variant={isActive("bulletList") ? "default" : "ghost"} size="icon" onClick={() => editor.chain().focus().toggleBulletList().run()} aria-label="Lista com marcadores">
+          <List className="h-4 w-4" />
+        </Button>
+        <Button type="button" variant={isActive("orderedList") ? "default" : "ghost"} size="icon" onClick={() => editor.chain().focus().toggleOrderedList().run()} aria-label="Lista numerada">
+          <ListOrdered className="h-4 w-4" />
+        </Button>
+        <div className="mx-1 h-5 w-px bg-border" />
+        <Button type="button" variant="ghost" size="icon" onClick={setLink} aria-label="Inserir link">
+          <LinkIcon className="h-4 w-4" />
+        </Button>
+      </div>
+
+      <EditorContent editor={editor} />
+    </div>
+  );
+}
+
+/* ---------- Página ---------- */
 function ServicesManagement() {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
@@ -62,7 +165,7 @@ function ServicesManagement() {
   const [editingService, setEditingService] = useState<Service | null>(null);
   const [formData, setFormData] = useState<FormState>({
     title: "",
-    description: "",
+    description: "", // HTML do editor
     image_url: "",
     sku: "",
     price: "",
@@ -93,7 +196,6 @@ function ServicesManagement() {
       const res = await fetch(`/api/dashboard/products?userId=${user.id}&category=service`, { cache: "no-store" });
       if (res.ok) {
         const data = await res.json();
-        // Se sua API retorna { data: [...] }, ajuste aqui:
         setServices(Array.isArray(data) ? data : data?.data ?? []);
       } else {
         console.error("Fetch services failed:", await res.text());
@@ -126,7 +228,7 @@ function ServicesManagement() {
     setEditingService(s);
     setFormData({
       title: s.title ?? "",
-      description: s.description ?? "",
+      description: s.description ?? "", // HTML vindo do banco
       image_url: s.image_url ?? "",
       sku: s.sku ?? "",
       price: s.price != null ? String(s.price) : "",
@@ -173,7 +275,7 @@ function ServicesManagement() {
 
     const payload = {
       title: formData.title,
-      description: formData.description,
+      description: formData.description, // HTML do editor
       image_url: formData.image_url || null,
       sku: formData.sku || null,
       category: "service",
@@ -232,12 +334,12 @@ function ServicesManagement() {
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button /* não precisa onClick aqui; DialogTrigger já controla a abertura */>
+            <Button>
               <Plus className="mr-2 h-4 w-4" /> Novo Serviço
             </Button>
           </DialogTrigger>
 
-          <DialogContent className="sm:max-w-[720px]">
+          <DialogContent className="sm:max-w-[820px]">
             <DialogHeader>
               <DialogTitle>{editingService ? "Editar Serviço" : "Novo Serviço"}</DialogTitle>
               <DialogDescription>
@@ -268,12 +370,10 @@ function ServicesManagement() {
 
                 <div className="grid gap-2 sm:col-span-2">
                   <Label htmlFor="description">Descrição</Label>
-                  <Textarea
-                    id="description"
-                    rows={3}
+                  {/* ⬇️ TipTap no lugar do Textarea */}
+                  <RichTextEditor
                     value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    required
+                    onChange={(html) => setFormData({ ...formData, description: html })}
                   />
                 </div>
 
@@ -424,7 +524,10 @@ function ServicesManagement() {
                     </div>
                   </div>
                 </div>
-                <CardDescription className="line-clamp-2">{s.description}</CardDescription>
+                {/* preview sem tags para não quebrar o layout */}
+                <CardDescription className="line-clamp-2">
+                  {stripHtml(s.description)}
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex gap-2">
@@ -449,6 +552,5 @@ function ServicesManagement() {
   );
 }
 
-// ✅ exporte dos dois jeitos para compatibilidade
 export { ServicesManagement };
 export default ServicesManagement;

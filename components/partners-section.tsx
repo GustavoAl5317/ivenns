@@ -2,10 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import Image from "next/image"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Handshake, ExternalLink, MapPin, Globe, Users, Award } from "lucide-react"
+import { Handshake } from "lucide-react"
 
 type Partner = {
   id: string
@@ -16,34 +13,64 @@ type Partner = {
   location?: string | null
   partnership_type: string | null
   created_at: string
+  display?: "circle" | "normal"
 }
 
-const TYPE_ICON: Record<string, any> = {
-  tecnologia: Globe,
-  distribuidor: Users,
-  certificado: Award,
+/* =========================
+ *  LOGOS MANUAIS
+ * =========================
+ */
+const MANUAL_PARTNERS: Array<
+  Pick<Partner, "name" | "logo_url" | "website_url" | "display"> & { order?: number }
+> = [
+  { name: "HP", logo_url: "/images/hp.png", website_url: "https://www.hp.com", order: 1, display: "circle" },
+  { name: "IBM", logo_url: "/images/ibm.png", website_url: "https://www.ibm.com", order: 2, display: "normal" },
+  { name: "NetApp", logo_url: "/images/net.png", website_url: "https://www.netapp.com", order: 3, display: "normal" },
+  
+]
+
+/** Tamanho base dos logos */
+const DOT = {
+  base: "h-20 w-20",       // mobile
+  sm: "sm:h-24 sm:w-24",   // >= 640px
+  md: "md:h-28 md:w-28",   // >= 768px
 }
 
-const TYPE_TONE: Record<
-  string,
-  { bg: string; fg: string; ring: string; subtle: string }
-> = {
-  tecnologia:   { bg: "bg-blue-50/50",      fg: "text-blue-700",      ring: "ring-blue-200/60",      subtle: "from-blue-500/10 to-blue-400/5" },
-  distribuidor: { bg: "bg-emerald-50/50",   fg: "text-emerald-700",   ring: "ring-emerald-200/60",   subtle: "from-emerald-500/10 to-emerald-400/5" },
-  certificado:  { bg: "bg-violet-50/50",    fg: "text-violet-700",    ring: "ring-violet-200/60",    subtle: "from-violet-500/10 to-violet-400/5" },
-  default:      { bg: "bg-neutral-50/50",   fg: "text-neutral-700",   ring: "ring-neutral-200/60",   subtle: "from-neutral-500/10 to-neutral-400/5" },
+/** Converte manuais para Partner */
+function manualToPartner(items: typeof MANUAL_PARTNERS): Partner[] {
+  return items
+    .filter(p => p.logo_url && p.name)
+    .sort((a, b) => (a.order ?? 9999) - (b.order ?? 9999))
+    .map((p, idx) => ({
+      id: `manual-${idx}-${p.name}`,
+      name: p.name,
+      description: "",
+      logo_url: p.logo_url,
+      website_url: p.website_url ?? null,
+      location: null,
+      partnership_type: null,
+      created_at: new Date().toISOString(),
+      display: p.display ?? "circle",
+    }))
 }
 
-function getTone(type?: string | null) {
-  if (!type) return TYPE_TONE.default
-  return TYPE_TONE[type.toLowerCase()] ?? TYPE_TONE.default
-}
-function getIcon(type?: string | null) {
-  if (!type) return Handshake
-  return TYPE_ICON[type.toLowerCase()] ?? Handshake
+/** Remove duplicatas por nome+logo (prioriza manuais) */
+function mergePartners(manual: Partner[], fetched: Partner[]): Partner[] {
+  const seen = new Set<string>()
+  const out: Partner[] = []
+  const push = (p: Partner) => {
+    const key =
+      (p.name || "").toLowerCase().trim() + "|" + (p.logo_url || "").toLowerCase().trim()
+    if (seen.has(key)) return
+    seen.add(key)
+    out.push(p)
+  }
+  manual.forEach(push)
+  fetched.forEach(push)
+  return out
 }
 
-export function PartnersSection() {
+export default function PartnersSection() {
   const [partners, setPartners] = useState<Partner[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -56,10 +83,20 @@ export function PartnersSection() {
     ;(async () => {
       try {
         setLoading(true)
-        const res = await fetch("/api/partners", { signal: ac.signal })
+
+        // 1) converte os manuais
+        const manual = manualToPartner(MANUAL_PARTNERS)
+
+        // 2) busca os do painel
+        const res = await fetch("/api/partners", { signal: ac.signal, cache: "no-store" })
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         const data = (await res.json()) as Partner[]
-        if (mounted.current) setPartners(Array.isArray(data) ? data : [])
+        const fetched = Array.isArray(data) ? data : []
+
+        // 3) mescla (manuais têm prioridade e evitam duplicatas)
+        const merged = mergePartners(manual, fetched)
+
+        if (mounted.current) setPartners(merged)
       } catch (e: any) {
         if (!ac.signal.aborted) {
           console.error("Error fetching partners:", e)
@@ -77,195 +114,99 @@ export function PartnersSection() {
   }, [])
 
   return (
-    <section id="parceiros" className="py-24 bg-background">
-      <div className="container mx-auto px-4">
-        {/* Título */}
-        <div className="text-center mb-14">
-          <div className="inline-flex items-center gap-3 rounded-full border px-4 py-1.5 text-sm text-muted-foreground mb-4 bg-muted/30">
-            <Handshake className="h-4 w-4" />
-            Parceiros de confiança
-          </div>
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-            Nossos <span className="gradient-text">Parceiros</span>
-          </h2>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mt-3">
-            Trabalhamos ao lado de marcas que elevam o padrão de qualidade para entregar soluções completas.
-          </p>
+    <section
+      id="parceiros"
+      className="
+        relative mt-20
+        bg-gradient-to-b from-background to-background
+        dark:from-[#0A0F1F] dark:to-[#0B1226]
+      "
+    >
+      {/* filete superior sutil */}
+      <div
+        aria-hidden
+        className="absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent"
+      />
+
+      <div className="container mx-auto px-6 py-14">
+        {/* título */}
+        <div className="text-center mb-10">
+          <h3 className="text-lg font-semibold tracking-tight text-foreground">
+            Trabalhamos com as principais marcas do mercado
+          </h3>
         </div>
 
-        {/* Loading */}
+        {/* loading */}
         {loading && (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {[...Array(6)].map((_, i) => (
-              <Card key={i} className="overflow-hidden border-border/50">
-                <div className="aspect-video bg-muted/40 animate-pulse" />
-                <CardHeader className="space-y-2">
-                  <div className="h-5 w-2/3 bg-muted/50 animate-pulse rounded" />
-                  <div className="h-4 w-1/3 bg-muted/40 animate-pulse rounded" />
-                  <div className="h-14 w-full bg-muted/30 animate-pulse rounded" />
-                </CardHeader>
-                <CardContent>
-                  <div className="h-9 w-full bg-muted/30 animate-pulse rounded" />
-                </CardContent>
-              </Card>
+          <div className="flex flex-wrap justify-center items-center gap-16">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div
+                key={i}
+                className={`${DOT.base} ${DOT.sm} ${DOT.md} rounded-full ring-1 ring-border/50 bg-muted/30 animate-pulse`}
+              />
             ))}
           </div>
         )}
 
-        {/* Erro */}
+        {/* erro */}
         {!loading && error && (
-          <div className="text-center py-16">
-            <div className="mx-auto mb-4 w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center">
+          <div className="flex flex-col items-center justify-center gap-3 py-10">
+            <div className="h-12 w-12 rounded-full bg-destructive/10 flex items-center justify-center">
               <span className="text-destructive">!</span>
             </div>
             <p className="text-muted-foreground">{error}</p>
           </div>
         )}
 
-        {/* Empty */}
-        {!loading && !error && partners.length === 0 && (
-          <div className="text-center py-16">
-            <div className="relative w-24 h-24 mx-auto mb-6">
-              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400/15 to-violet-400/15 animate-pulse" />
-              <Handshake className="relative w-12 h-12 text-muted-foreground mx-auto mt-6" />
-            </div>
-            <h3 className="text-2xl font-semibold mb-2">Parcerias em construção</h3>
-            <p className="text-muted-foreground max-w-md mx-auto">
-              Em breve, novos parceiros estratégicos aparecerão aqui. Fique de olho!
-            </p>
-          </div>
-        )}
-
-        {/* Lista */}
+        {/* lista */}
         {!loading && !error && partners.length > 0 && (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {partners.map((p) => {
-              const tone = getTone(p.partnership_type)
-              const Icon = getIcon(p.partnership_type)
-
-              return (
-                <Card
-                  key={p.id}
-                  className="group overflow-hidden border border-border/50 bg-background/60 backdrop-blur-sm transition-all hover:shadow-lg hover:-translate-y-0.5"
+          <div className="flex flex-wrap justify-center items-center gap-16">
+            {partners.map((p) => (
+              <a
+                key={p.id}
+                href={p.website_url || "#"}
+                target={p.website_url ? "_blank" : undefined}
+                rel={p.website_url ? "noopener noreferrer" : undefined}
+                className="text-center group"
+                aria-label={p.name}
+                title={p.name}
+              >
+                <div
+                  className={`
+                    relative flex items-center justify-center
+                    ${DOT.base} ${DOT.sm} ${DOT.md}
+                    ${p.display === "circle" ? "rounded-full overflow-hidden ring-1 ring-border/60" : ""}
+                    transition-transform duration-200 group-hover:-translate-y-0.5
+                  `}
                 >
-                  {/* Logo */}
-                  <div
-                    className={`relative aspect-video overflow-hidden ring-1 ${tone.ring} rounded-b-none`}
-                  >
-                    {p.logo_url ? (
-                      <Image
-                        src={p.logo_url}
-                        alt={p.name}
-                        fill
-                        sizes="(max-width: 768px) 50vw, 33vw"
-                        className="object-contain p-6 transition-transform duration-300 group-hover:scale-105"
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center">
-                        <Icon className="h-14 w-14 text-muted-foreground" />
-                      </div>
-                    )}
-
-                    <div className="absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-t-lg
-                                    from-transparent via-transparent to-transparent" />
-
-                    <div className="absolute top-3 right-3">
-                      <Badge className={`border ${tone.bg} ${tone.fg} backdrop-blur`}>
-                        {p.partnership_type ?? "Parceria"}
-                      </Badge>
-                    </div>
-                  </div>
-
-                  {/* Conteúdo */}
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-xl tracking-tight group-hover:text-primary transition-colors">
-                      {p.name}
-                    </CardTitle>
-
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      {p.location && (
-                        <>
-                          <MapPin className="h-4 w-4" />
-                          <span>{p.location}</span>
-                        </>
-                      )}
-                    </div>
-
-                    {p.description && (
-                      <CardDescription className="mt-2 text-sm leading-relaxed line-clamp-3">
-                        {p.description}
-                      </CardDescription>
-                    )}
-                  </CardHeader>
-
-                  <CardContent className="pt-0">
-                    {p.website_url && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full"
-                        onClick={() => window.open(p.website_url as string, "_blank", "noopener,noreferrer")}
-                      >
-                        <ExternalLink className="mr-2 h-4 w-4" />
-                        Visitar site
-                      </Button>
-                    )}
-                  </CardContent>
-                </Card>
-              )
-            })}
+                  <Image
+                    src={p.logo_url}
+                    alt={p.name}
+                    fill
+                    sizes="(max-width: 768px) 72px, (max-width: 1024px) 96px, 112px"
+                    className={p.display === "circle" ? "object-cover" : "object-contain p-2"}
+                    priority={false}
+                  />
+                </div>
+                <span className="mt-2 block text-xs text-muted-foreground">{p.name}</span>
+              </a>
+            ))}
           </div>
         )}
 
-        {/* Benefícios / CTA secundário */}
-        <div className="mt-16">
-          <div className="rounded-2xl border border-border/50 bg-gradient-to-r from-primary/5 via-primary/5 to-transparent p-8">
-            <h3 className="text-2xl font-bold text-center mb-8">Por que firmamos parcerias?</h3>
-            <div className="grid gap-6 md:grid-cols-3">
-              <Benefit
-                iconBg="bg-blue-500/15"
-                icon={<Award className="h-6 w-6 text-blue-600" />}
-                title="Qualidade Garantida"
-                desc="Trabalhamos com fabricantes e distribuidores certificados para manter o padrão de excelência."
-              />
-              <Benefit
-                iconBg="bg-emerald-500/15"
-                icon={<Globe className="h-6 w-6 text-emerald-600" />}
-                title="Tecnologia de Ponta"
-                desc="Acesso às inovações mais recentes para entregar soluções modernas e eficientes."
-              />
-              <Benefit
-                iconBg="bg-violet-500/15"
-                icon={<Users className="h-6 w-6 text-violet-600" />}
-                title="Suporte Especializado"
-                desc="Equipe com certificações e treinamentos contínuos para te acompanhar em cada etapa."
-              />
+        {/* vazio */}
+        {!loading && !error && partners.length === 0 && (
+          <div className="flex flex-col items-center justify-center gap-4 py-10">
+            <div className="h-20 w-20 rounded-full bg-muted/40 ring-1 ring-border/50 flex items-center justify-center">
+              <Handshake className="h-8 w-8 text-muted-foreground" />
             </div>
+            <p className="text-muted-foreground">Em breve, novos parceiros por aqui.</p>
           </div>
-        </div>
+        )}
       </div>
-    </section>
-  )
-}
 
-function Benefit({
-  icon,
-  iconBg,
-  title,
-  desc,
-}: {
-  icon: React.ReactNode
-  iconBg: string
-  title: string
-  desc: string
-}) {
-  return (
-    <div className="text-center">
-      <div className={`mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full ${iconBg}`}>
-        {icon}
-      </div>
-      <h4 className="font-semibold mb-1">{title}</h4>
-      <p className="text-sm text-muted-foreground">{desc}</p>
-    </div>
+      {/* base de rodapé sutil */}
+      <div className="h-6 w-full bg-primary/5 dark:bg-primary/10" />
+    </section>
   )
 }
