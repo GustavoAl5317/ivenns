@@ -110,7 +110,7 @@ export default function AdminLoginPage() {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="vendas@ivenns.com.br"
+                    placeholder="email@empresa.com.br"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -121,6 +121,7 @@ export default function AdminLoginPage() {
                   <Input
                     id="password"
                     type="password"
+                    placeholder="Digite sua senha"
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
