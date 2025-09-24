@@ -12,7 +12,7 @@ export function WhatsAppFloat() {
       body: JSON.stringify({ type: "whatsapp" }),
     })
 
-    window.open("https://wa.me/5511913211958?text=Olá! Gostaria de mais informações.", "_blank")
+    window.open("https://wa.me/5511992138829?text=Olá! Gostaria de mais informações.", "_blank")
   }
 
   return (

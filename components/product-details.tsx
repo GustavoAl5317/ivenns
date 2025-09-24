@@ -39,7 +39,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
 
   const handleConsultProduct = () => {
     const message = `Olá! Gostaria de saber mais sobre o produto: ${product.title} (Código: ${product.sku})`
-    const whatsappUrl = `https://wa.me/5511913211958?text=${encodeURIComponent(message)}`
+    const whatsappUrl = `https://wa.me/5511992138829?text=${encodeURIComponent(message)}`
     window.open(whatsappUrl, '_blank')
   }
 

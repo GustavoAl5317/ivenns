@@ -72,7 +72,7 @@ type ServicesSectionProps = {
 /* =========================
    WhatsApp
 ========================= */
-const WHATSAPP_PHONE = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || "5511913211958"
+const WHATSAPP_PHONE = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || "5511992138829"
 
 function buildWhatsAppLink(serviceTitle: string) {
   const msg = encodeURIComponent(`Olá! Gostaria de consultar sobre: ${serviceTitle}`)

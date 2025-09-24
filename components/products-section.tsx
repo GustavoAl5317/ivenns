@@ -26,7 +26,7 @@ const FALLBACK_IMAGE =
 const fmtBRL = (v: number) => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v)
 
 const getWhatsAppUrl = (text: string) => {
-  const phone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || "5511913211958"
+  const phone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || "5511992138829"
   return `https://wa.me/${phone}?text=${encodeURIComponent(text)}`
 }
 

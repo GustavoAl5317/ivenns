@@ -11,6 +11,7 @@ import { ContactSection } from "@/components/contact-section"
 import { Footer } from "@/components/footer"
 import { WhatsAppFloat } from "@/components/whatsapp-float"
 import AnimatedGlassCard from "@/components/animated-glass-card"
+import { SegmentsSection } from "@/components/segments-section.tsx"
 
 export default function HomePage() {
   return (
@@ -19,6 +20,7 @@ export default function HomePage() {
       <HeroSection />
       <ProductsSection />
       <ServicesSection />
+      <SegmentsSection />
       <PartnersSection />
       <BenefitsSection />
       <ReviewsSection />

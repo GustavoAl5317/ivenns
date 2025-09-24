@@ -22,7 +22,7 @@ export function HeroSection() {
 
     // Open WhatsApp
     window.open(
-      "https://wa.me/5511913211958?text=Olá! Gostaria de saber mais sobre seus produtos e serviços.",
+      "https://wa.me/5511992138829?text=Olá! Gostaria de saber mais sobre seus produtos e serviços.",
       "_blank",
     )
   }
@@ -69,10 +69,10 @@ export function HeroSection() {
           {/* Tagline */}
           <div className="mb-8">
             <h2 className="text-2xl md:text-4xl font-bold text-balance mb-4">
-              Infraestrutura de rede, periféricos e suporte de elite. <span className="gradient-text">Transformam Negócios</span>
+              SUPORTE DE ELITE EM SERVIDORES STORAGE INFRAETRUTURA DE REDE e<span className="gradient-text">  PERIFERICOS. JUNTOS COM VOCE TRANSFORMANDO SEU NEGOCIO</span>
             </h2>
             <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              Da escolha de switches e servidores à instalação de pontos de rede e manutenção de equipamentos — a Ivens entrega performance e confiabilidade pra sua operação rodar no talo, sem dor de cabeça.
+              Da escolha de switches e servidores à instalação de pontos de rede e manutenção de equipamentos — a Ivenns entrega performance e confiabilidade pra sua operação rodar no talo, sem dor de cabeça.
             </p>
           </div>
 

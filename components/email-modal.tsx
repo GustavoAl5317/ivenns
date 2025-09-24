@@ -65,7 +65,7 @@ Empresa: ${formData.company}
 Mensagem:
 ${formData.message}`
 
-      const mailtoLink = `mailto:contato@minhaempresa.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+      const mailtoLink = `mailto:vendas@ivenns.com.br?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
       window.location.href = mailtoLink
 
       // Reset form and close modal
