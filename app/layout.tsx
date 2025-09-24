@@ -12,13 +12,13 @@ const poppins = Poppins({
 })
 
 export const metadata: Metadata = {
-  title: "Minha Empresa - Produtos e Serviços de Qualidade",
+  title: "IVENNS",
   description:
     "Apresentamos os melhores produtos e serviços para você. Consultoria, desenvolvimento e soluções personalizadas.",
   generator: "v0.app",
   keywords: ["produtos", "serviços", "consultoria", "marketing digital", "desenvolvimento"],
   openGraph: {
-    title: "Minha Empresa - Produtos e Serviços de Qualidade",
+    title: "IVENNS",
     description: "Apresentamos os melhores produtos e serviços para você",
     type: "website",
   },
