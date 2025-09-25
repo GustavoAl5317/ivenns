@@ -86,7 +86,7 @@ export function ContactSection() {
                 <CardContent className="p-6 text-center">
                   <MapPin className="h-8 w-8 text-primary mx-auto mb-3" />
                   <h3 className="font-semibold mb-2">Localização</h3>
-                  <p className="text-muted-foreground">São Paulo, SP</p>
+                  <p className="text-muted-foreground">VILA OLIMPIA - AV DOS BANDEIRANTES 2653</p>
                 </CardContent>
               </Card>
             </div>

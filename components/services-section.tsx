@@ -119,7 +119,7 @@ export default function ServicesSection({
   heading = "Nossos Serviços",
   subheading = "Soluções completas de ponta a ponta",
   ctaLabel = "Fale com um especialista",
-  ctaHref = "/contato",
+  ctaHref = "/#contato",
   limit = 6,
   api = "/api/products?category=service",
 }: ServicesSectionProps) {
