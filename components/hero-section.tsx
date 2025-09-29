@@ -122,7 +122,7 @@ export default function HeroSection() {
               transitionDelay: "80ms",
             }}
           >
-            Plataforma com <span className="whitespace-nowrap">SLA garantido</span> e escala real.
+            Tecnologia de <span className="whitespace-nowrap"> ponta com suporte </span> de elite.
           </h1>
 
           <p
@@ -130,7 +130,7 @@ export default function HeroSection() {
             className="reveal mt-5 max-w-xl text-lg leading-relaxed text-neutral-600 md:text-xl"
             style={{ transitionDelay: "140ms" }}
           >
-            Observabilidade, performance e segurança — do on-prem ao multi-cloud — com time que resolve.
+           Performance, confiabilidade e inovação para sua infraestrutura rodar sem limites.
           </p>
 
           <div className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">

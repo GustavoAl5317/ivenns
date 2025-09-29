@@ -24,7 +24,7 @@ export default function HomePage() {
       <SegmentsSection />
       <PartnersSection />
       <BenefitsSection />
-      <ReviewsSection />
+      {/* <ReviewsSection /> */}
       <FAQSection />
       <ContactSection />
       <Footer />
