@@ -12,6 +12,7 @@ import { Footer } from "@/components/footer"
 import { WhatsAppFloat } from "@/components/whatsapp-float"
 import AnimatedGlassCard from "@/components/animated-glass-card"
 import {SegmentsSection} from "../components/segments-section.tsx"
+import ManufacturersSection from "@/components/typeproducts"
 
 
 export default function HomePage() {
@@ -19,6 +20,7 @@ export default function HomePage() {
     <main className="min-h-screen bg-background">
       <Header />
       <HeroSection />
+      <ManufacturersSection/>
       <ProductsSection />
       <ServicesSection />
       <SegmentsSection />

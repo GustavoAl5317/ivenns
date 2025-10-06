@@ -111,19 +111,24 @@ export default function HeroSection() {
             Infra • Cloud • Segurança • Enterprise-grade
           </div>
 
-          <h1
-            data-animate
-            className="reveal mt-6 text-4xl font-semibold leading-[1.05] tracking-tight md:text-6xl"
-            style={{
-              background:
-                "linear-gradient(90deg, #111 0%, #111 10%, #4338CA 45%, #A855F7 60%, #111 90%, #111 100%)",
-              WebkitBackgroundClip: "text",
-              color: "transparent",
-              transitionDelay: "80ms",
-            }}
-          >
-            Tecnologia de <span className="whitespace-nowrap"> ponta com suporte </span> de elite.
-          </h1>
+       <h1
+  data-animate
+  className="reveal mt-6 text-4xl font-semibold tracking-tight md:text-6xl leading-tight md:leading-[1.08]"
+  style={{
+    background:
+      "linear-gradient(90deg,#111 0%,#111 10%,#4338CA 45%,#A855F7 60%,#111 90%,#111 100%)",
+    WebkitBackgroundClip: "text",
+    color: "transparent",
+    transitionDelay: "80ms",
+  }}
+>
+  Tecnologia de <span className="whitespace-nowrap">ponta com suporte</span> de elite.
+  <small className="block mt-1 md:mt-2 text-xs md:text-sm font-normal text-neutral-600/80 leading-snug tracking-[0.01em] max-w-[55ch]">
+    Servidores • Storage • Robôs de Backup • Switch
+  </small>
+</h1>
+
+
 
           <p
             data-animate

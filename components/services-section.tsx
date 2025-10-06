@@ -18,6 +18,8 @@ import {
   Sparkles,
   Package,
   MessageCircle,
+  MapPin,
+  Clock,
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -115,7 +117,32 @@ function HtmlDescription({ html }: { html: string }) {
 }
 
 /* =========================
-   Seção (LIGHT: branco + gradiente cinza + animações)
+   Itens adicionais (minimalista)
+========================= */
+const EXTRA_SERVICES: Array<{
+  icon: ComponentType<any>
+  title: string
+  desc: string
+}> = [
+  {
+    icon: MapPin,
+    title: "Atendimento no local",
+    desc: "Enviamos um técnico até você para executar o atendimento.",
+  },
+  {
+    icon: Headphones,
+    title: "Atendimento remoto",
+    desc: "Engenheiros especializados para diagnóstico e resolução remota.",
+  },
+  {
+    icon: Clock,
+    title: "Contratos 24x7 em todo o Brasil",
+    desc: "Cobertura nacional com SLA contínuo.",
+  },
+]
+
+/* =========================
+   Seção (LIGHT)
 ========================= */
 export default function ServicesSection({
   id = "servicos",
@@ -139,7 +166,6 @@ export default function ServicesSection({
     let mounted = true
     const ac = new AbortController()
     const delays = [0, 300, 800]
-    const t0 = performance.now()
 
     const load = async () => {
       for (let i = 0; i < delays.length; i++) {
@@ -212,48 +238,17 @@ export default function ServicesSection({
 
   return (
     <section id={id} className="relative overflow-hidden py-20 sm:py-28 text-neutral-900">
-      {/* ===== Background LIGHT com animações tech ===== */}
+      {/* ===== Background LIGHT com sutilezas ===== */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
-        {/* base branca → cinza clarinho */}
         <div className="absolute inset-0 bg-[radial-gradient(120%_80%_at_50%_0%,#ffffff_0%,#fafafa_55%,#f5f6f8_100%)]" />
-
-        {/* grid técnica animada (cinza sutil) */}
         <div className="absolute inset-0 opacity-70 [mask-image:radial-gradient(70%_60%_at_50%_40%,#000,transparent_72%)]">
           <div className="h-full w-full animate-[gridMove_24s_linear_infinite] bg-[linear-gradient(to_right,rgba(2,6,23,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(2,6,23,0.05)_1px,transparent_1px)] bg-[size:34px_34px]" />
-        </div>
-
-        {/* linhas “circuito” claras (são visíveis) */}
-        <div className="absolute inset-0 opacity-70">
-          <div className="absolute left-[-10%] top-1/3 h-[2px] w-[120%] animate-[dashMove_11s_linear_infinite] bg-[repeating-linear-gradient(90deg,rgba(15,23,42,0)_0,rgba(15,23,42,0)_10px,rgba(2,6,23,.12)_10px,rgba(2,6,23,.12)_18px)]" />
-          <div className="absolute left-[-10%] top-2/3 h-[2px] w-[120%] animate-[dashMove_reverse_16s_linear_infinite] bg-[repeating-linear-gradient(90deg,rgba(2,6,23,0)_0,rgba(2,6,23,0)_12px,rgba(2,6,23,.10)_12px,rgba(2,6,23,.10)_20px)]" />
-        </div>
-
-        {/* varredura diagonal (brilho branco) */}
-        <div className="absolute inset-0 opacity-70 [mask-image:linear-gradient(110deg,transparent,black_30%,black_70%,transparent)]">
-          <div className="h-full w-full animate-[sweep_10s_ease-in-out_infinite] bg-[linear-gradient(110deg,rgba(255,255,255,0)_0%,rgba(255,255,255,.55)_50%,rgba(255,255,255,0)_100%)]" />
-        </div>
-
-        {/* pontos cintilantes discretos */}
-        <div className="absolute inset-0">
-          {[...Array(20)].map((_, i) => (
-            <span
-              key={i}
-              className="absolute h-[3px] w-[3px] rounded-full bg-neutral-400"
-              style={{
-                top: `${(i * 37) % 100}%`,
-                left: `${(i * 53) % 100}%`,
-                animation: `twinkle ${(5 + (i % 5))}s ease-in-out ${i * 0.25}s infinite`,
-                filter: "drop-shadow(0 0 8px rgba(2,6,23,.25))",
-                opacity: 0.55,
-              }}
-            />
-          ))}
         </div>
       </div>
 
       <div className="container relative z-[1] mx-auto px-6">
         {/* Header */}
-        <motion.div variants={container} initial="hidden" animate="show" className="mx-auto mb-14 max-w-3xl text-center">
+        <motion.div variants={container} initial="hidden" animate="show" className="mx-auto mb-12 max-w-3xl text-center">
           <motion.div
             variants={item}
             className="mx-auto mb-4 inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white/80 px-4 py-1.5 text-sm text-neutral-700 shadow-sm backdrop-blur"
@@ -273,7 +268,27 @@ export default function ServicesSection({
             {subheading}
           </motion.p>
 
-          <motion.div variants={item} className="mt-6">
+          {/* ===== Itens adicionais (minimal) ===== */}
+          <motion.ul
+            variants={item}
+            className="mt-8 grid gap-6 sm:grid-cols-3"
+            aria-label="Serviços adicionais"
+          >
+            {EXTRA_SERVICES.map(({ icon: Icon, title, desc }) => (
+              <li key={title} className="flex items-start gap-3">
+                <div className="mt-0.5 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-neutral-100 text-neutral-900 ring-1 ring-black/5">
+                  <Icon className="h-4 w-4" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-neutral-900">{title}</p>
+                  <p className="text-sm text-neutral-600">{desc}</p>
+                </div>
+              </li>
+            ))}
+          </motion.ul>
+
+          {/* CTA */}
+          <motion.div variants={item} className="mt-8">
             <Button
               asChild
               size="lg"
@@ -299,7 +314,7 @@ export default function ServicesSection({
           </motion.div>
         </motion.div>
 
-        {/* Grid */}
+        {/* Grid de serviços */}
         <motion.div
           variants={container}
           initial="hidden"
@@ -331,20 +346,6 @@ export default function ServicesSection({
           0% { transform: translateX(0) translateY(0) }
           100% { transform: translateX(-80px) translateY(-80px) }
         }
-        @keyframes sweep {
-          0% { transform: translateX(-30%) }
-          50% { transform: translateX(30%) }
-          100% { transform: translateX(-30%) }
-        }
-        @keyframes twinkle {
-          0%, 100% { opacity: .15; transform: scale(1) }
-          50% { opacity: .7; transform: scale(1.35) }
-        }
-        @keyframes floatCard {
-          0% { transform: translateY(0px) }
-          50% { transform: translateY(-6px) }
-          100% { transform: translateY(0px) }
-        }
         @media (prefers-reduced-motion: reduce) {
           * { animation: none !important; transition: none !important; }
         }
@@ -354,7 +355,7 @@ export default function ServicesSection({
 }
 
 /* =========================
-   Card (white/grey + “anti-branco” nas fotos + animações)
+   Card (white/grey)
 ========================= */
 function ServiceCard({
   Icon,
@@ -387,41 +388,15 @@ function ServiceCard({
         backdrop-blur supports-[backdrop-filter]:bg-white/80
         transition-all
         ${prefersReduced ? "" : "hover:shadow-[0_24px_60px_-24px_rgba(2,6,23,.18)]"}
-        ${prefersReduced ? "" : "motion-safe:animate-[floatCard_7s_ease-in-out_infinite]"}
       `}
       style={{ transform: "translateZ(0)" }}
     >
-      {/* Moldura cinza gradiente no hover */}
-      <span
-        aria-hidden
-        className="pointer-events-none absolute inset-0 rounded-[inherit] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-        style={{
-          padding: 1,
-          borderRadius: 16,
-          background: "linear-gradient(90deg, rgba(2,6,23,.18), rgba(2,6,23,.10), rgba(2,6,23,.18))",
-          mask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
-          WebkitMask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
-        }}
-      />
-
-      {/* Mídia: “anti-branco” em páginas claras */}
       {imageUrl ? (
         <div className="relative aspect-[16/8] overflow-hidden bg-neutral-200/60">
-          {/* bg cinza claro por trás ajuda o multiply a “sumir” com brancos */}
           <img
             src={imageUrl}
             alt="capa do serviço"
-            className="
-              h-full w-full object-contain
-              mix-blend-multiply
-              [filter:brightness(0.92)_contrast(1.22)_saturate(1.05)]
-            "
-          />
-          {/* sweep de brilho leve */}
-          <div
-            className="pointer-events-none absolute inset-0 -translate-x-1/3 opacity-0 transition-[opacity,transform] duration-[900ms] ease-out group-hover:translate-x-1/3 group-hover:opacity-100
-            [mask-image:linear-gradient(to_right,transparent,black_40%,transparent_60%)]"
-            style={{ background: "linear-gradient(110deg, transparent 35%, rgba(255,255,255,.75) 50%, transparent 65%)" }}
+            className="h-full w-full object-contain mix-blend-multiply [filter:brightness(0.92)_contrast(1.22)_saturate(1.05)]"
           />
         </div>
       ) : null}
@@ -462,7 +437,6 @@ function ServiceCard({
 
         <div className="mt-auto" />
 
-        {/* Barra de ações */}
         <div className="flex items-center gap-3">
           <Button
             asChild
@@ -484,10 +458,6 @@ function ServiceCard({
             >
               <MessageCircle className="h-4 w-4" />
               Consultar
-              <span
-                aria-hidden
-                className="pointer-events-none absolute inset-0 translate-x-[-120%] bg-gradient-to-r from-transparent via-white/35 to-transparent transition-transform duration-700 ease-out group-hover:translate-x-[120%] [mask-image:linear-gradient(90deg,transparent,white,transparent)]"
-              />
             </a>
           </Button>
 
