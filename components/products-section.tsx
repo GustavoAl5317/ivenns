@@ -296,14 +296,26 @@ export function ProductsSection({ initialProducts = [] as Product[] }) {
     return () => acRef.current?.abort()
   }, [fetchPage, initialProducts.length])
 
-  // Ordena: com imagem primeiro
-  const sortedProducts = useMemo(() => {
-    return [...products].sort((a, b) => {
-      const aHas = hasValidImageUrl(a.image_url) ? 1 : 0
-      const bHas = hasValidImageUrl(b.image_url) ? 1 : 0
-      return bHas - aHas
-    })
-  }, [products])
+
+ // Ordenar com imagem real primeiro
+const sortedProducts = useMemo(() => {
+  const withImg: Product[] = []
+  const withoutImg: Product[] = []
+
+  for (const p of products) {
+    const img = (p.image_url || "").trim()
+    // só entra como "com imagem" se for HTTP(S) e não vazio
+    if (img && /^https?:\/\//i.test(img)) {
+      withImg.push(p)
+    } else {
+      withoutImg.push(p)
+    }
+  }
+
+  // junta mantendo ordem original dentro de cada grupo
+  return [...withImg, ...withoutImg]
+}, [products])
+
 
   // Garante visibilidade mínima de 2 linhas e não passa do total
   useEffect(() => {
