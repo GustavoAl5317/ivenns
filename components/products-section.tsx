@@ -5,7 +5,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { MessageCircle, Eye, Package, DollarSign, Star, ShoppingCart } from "lucide-react"
+import { MessageCircle, Eye, Package, DollarSign, Star } from "lucide-react"
 
 /* ==================== TIPOS ==================== */
 type Product = {
@@ -22,7 +22,7 @@ type Product = {
 const COLS_DESKTOP = 3
 const ROWS_PER_LAYER = 2
 const CARDS_PER_LAYER = COLS_DESKTOP * ROWS_PER_LAYER // 6
-const PAGE_SIZE = 9 // sua API
+const PAGE_SIZE = 9 // precisa casar com sua API
 
 const fmtBRL = (v: number) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v)
@@ -40,7 +40,6 @@ function slugify(s: string) {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "")
 }
-
 function hasValidImageUrl(input?: string | null) {
   const raw = (input || "").trim()
   if (!raw) return false
@@ -79,7 +78,6 @@ const ProductSkeleton = () => (
     </CardContent>
   </Card>
 )
-
 const RowSkeleton = () => (
   <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
     {Array.from({ length: 3 }).map((_, i) => (
@@ -103,7 +101,6 @@ function PrimaryButton({ children, ...props }: React.ComponentProps<typeof Butto
     </Button>
   )
 }
-
 function PrimaryLinkButton({ href, children, className = "" }: { href: string; children: React.ReactNode; className?: string }) {
   return (
     <Button
@@ -120,7 +117,6 @@ function PrimaryLinkButton({ href, children, className = "" }: { href: string; c
     </Button>
   )
 }
-
 function SubtleButton({ children, ...props }: React.ComponentProps<"button">) {
   return (
     <button
@@ -141,22 +137,12 @@ const ProductCard = React.memo(function ProductCard({
   product: Product
   onConsult: (p: Product) => void
 }) {
-  // preço só aparece se > 0
   const hasPrice = product.price != null && Number(product.price) > 0
-
   const [showPlaceholder, setShowPlaceholder] = useState(!hasValidImageUrl(product.image_url))
   const href = `/produto/${slugify(product.title)}-${product.sku}`
 
   return (
-    <article
-      className="
-        group relative overflow-hidden rounded-2xl
-        border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.03))]
-        shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur
-        transition-all hover:-translate-y-1 hover:shadow-[0_26px_80px_-24px_rgba(0,0,0,0.55)]
-      "
-    >
-      {/* MEDIA */}
+    <article className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.03))] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur transition-all hover:-translate-y-1 hover:shadow-[0_26px_80px_-24px_rgba(0,0,0,0.55)]">
       <Link href={href} aria-label={`Abrir detalhes de ${product.title}`} className="relative block aspect-video overflow-hidden">
         {showPlaceholder ? (
           <div className="relative flex h-full w-full items-center justify-center">
@@ -170,7 +156,6 @@ const ProductCard = React.memo(function ProductCard({
                 Imagem em breve
               </span>
             </div>
-            {/* chips */}
             <div className="absolute left-3 top-3 flex gap-2">
               <span className="inline-flex items-center gap-1 rounded-full border border-white/25 bg-white/15 px-2 py-0.5 text-[11px] text-white backdrop-blur">
                 <Package className="h-3 w-3" /> {product.category || "Produto"}
@@ -195,7 +180,6 @@ const ProductCard = React.memo(function ProductCard({
         )}
       </Link>
 
-      {/* CONTENT */}
       <div className="p-5">
         <div className="mb-1 flex items-start justify-between gap-3">
           <h3 className="text-[1.05rem] font-semibold tracking-tight text-white">
@@ -214,7 +198,6 @@ const ProductCard = React.memo(function ProductCard({
 
         <div className="my-5 h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
-        {/* CTAs */}
         <div className="flex flex-wrap items-center gap-3">
           <PrimaryLinkButton href={href} className="px-4 py-2">
             <Eye className="mr-2 h-4 w-4" />
@@ -243,19 +226,23 @@ const ProductCard = React.memo(function ProductCard({
 })
 
 /* ==================== Seção de Produtos ==================== */
-export function ProductsSection() {
+export function ProductsSection({ initialProducts = [] as Product[] }) {
   const rootRef = useRef<HTMLDivElement>(null)
-  const [products, setProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState(true)
+
+  // inicia já com os itens SSR
+  const [products, setProducts] = useState<Product[]>(initialProducts)
+  const [loading, setLoading] = useState(initialProducts.length === 0)
   const [loadingMore, setLoadingMore] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [offset, setOffset] = useState(0)
-  const [hasMore, setHasMore] = useState(true)
+
+  // começa o offset a partir do que já foi entregue pelo SSR
+  const [offset, setOffset] = useState<number>(initialProducts.length)
+  const [hasMore, setHasMore] = useState<boolean>(true)
   const [visibleCount, setVisibleCount] = useState(CARDS_PER_LAYER) // 2 linhas
 
   const acRef = useRef<AbortController | null>(null)
 
-  // Fetch paginado
+  // Fetch paginado (usa o NOVO formato da API: { items, page })
   const fetchPage = useCallback(
     async (newOffset: number, append = false): Promise<number> => {
       acRef.current?.abort()
@@ -270,13 +257,18 @@ export function ProductsSection() {
         const url = `/api/products?category=product&limit=${PAGE_SIZE}&offset=${newOffset}`
         const res = await fetch(url, { signal: ac.signal, cache: "no-store" })
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
-        const data = (await res.json()) as Product[]
+
+        const payload = await res.json() as {
+          items: Product[]
+          page: { hasMore: boolean; offset: number; returned: number; total: number; limit: number }
+        }
 
         if (ac.signal.aborted) return 0
 
+        const data = payload?.items ?? []
         setProducts((prev) => (append ? [...prev, ...data] : data))
         setOffset(newOffset)
-        setHasMore(data.length === PAGE_SIZE)
+        setHasMore(Boolean(payload?.page?.hasMore))
         return data.length
       } catch (e: any) {
         if (!ac.signal.aborted) {
@@ -294,10 +286,15 @@ export function ProductsSection() {
     [],
   )
 
+  // Só busca a 1ª página no client se não veio nada do SSR
   useEffect(() => {
-    fetchPage(0, false)
+    if (initialProducts.length === 0) {
+      fetchPage(0, false)
+    } else {
+      setHasMore(true) // assume que ainda há mais; a 1ª carga SSR não sabe do total
+    }
     return () => acRef.current?.abort()
-  }, [fetchPage])
+  }, [fetchPage, initialProducts.length])
 
   // Ordena: com imagem primeiro
   const sortedProducts = useMemo(() => {
@@ -328,6 +325,8 @@ export function ProductsSection() {
       const added = await fetchPage(nextOffset, true)
       if (added > 0) {
         setVisibleCount((v) => Math.min(v + step, sortedProducts.length + added))
+      } else {
+        setHasMore(false)
       }
     }
   }, [sortedProducts.length, visibleCount, hasMore, loadingMore, offset, fetchPage])
@@ -335,7 +334,6 @@ export function ProductsSection() {
   // Ver menos (recolhe 2 linhas), nunca abaixo de 2 linhas
   const handleShowLess = useCallback(() => {
     setVisibleCount((v) => Math.max(CARDS_PER_LAYER, v - CARDS_PER_LAYER))
-    // opcional: dar scroll suave até o topo da grade
     const el = document.getElementById("produtos-grid")
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" })
   }, [])
@@ -410,14 +408,7 @@ export function ProductsSection() {
               <div id="produtos-grid" className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {sortedProducts.slice(0, visibleCount).map((p) => (
                   <div key={p.id}>
-                    <ProductCard
-                      product={p}
-                      onConsult={(prod) => {
-                        const message = `Olá! Gostaria de saber mais sobre o produto: ${prod.title} (SKU: ${prod.sku}).`
-                        const whatsappUrl = getWhatsAppUrl(message)
-                        if (typeof window !== "undefined") window.open(whatsappUrl, "_blank", "noopener,noreferrer")
-                      }}
-                    />
+                    <ProductCard product={p} onConsult={handleQuickConsult} />
                   </div>
                 ))}
               </div>
@@ -436,7 +427,6 @@ export function ProductsSection() {
                 )}
               </div>
 
-              {/* Skeleton ao carregar mais da API */}
               {loadingMore && (
                 <div className="mt-6">
                   <RowSkeleton />
@@ -447,7 +437,6 @@ export function ProductsSection() {
         </div>
       </div>
 
-      {/* prefer-reduced-motion (só para segurança) */}
       <style jsx global>{`
         @keyframes meshDrift { 0% { transform: translate3d(0,0,0) } 50% { transform: translate3d(0,-10px,0) } 100% { transform: translate3d(0,0,0) } }
         @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
@@ -480,15 +469,7 @@ function FancyButton({
       onMouseMove={onMove}
       onClick={onClick}
       disabled={loading}
-      className="
-        group relative inline-flex items-center justify-center rounded-full px-6 py-2
-        text-sm font-medium text-neutral-900
-        bg-[linear-gradient(135deg,#ffffff_0%,#f3f4f6_100%)]
-        shadow-[0_8px_30px_-12px_rgba(255,255,255,.35)]
-        transition disabled:opacity-50
-        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70
-        hover:shadow-[0_14px_40px_-10px_rgba(255,255,255,.45)]
-      "
+      className="group relative inline-flex items-center justify-center rounded-full px-6 py-2 text-sm font-medium text-neutral-900 bg-[linear-gradient(135deg,#ffffff_0%,#f3f4f6_100%)] shadow-[0_8px_30px_-12px_rgba(255,255,255,.35)] transition disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 hover:shadow-[0_14px_40px_-10px_rgba(255,255,255,.45)]"
     >
       <span
         aria-hidden
