@@ -1,7 +1,9 @@
+// app/admin/products/page.tsx (ou o arquivo equivalente da sua página)
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import { AdminHeader } from "@/components/admin/admin-header"
 import { ProductsManagement } from "@/components/admin/products-management"
+import { BulkImportButton } from "@/components/admin/bulk-import-button" // ⬅️ novo
 
 export default async function AdminProductsPage() {
   const supabase = await createClient()
@@ -12,7 +14,11 @@ export default async function AdminProductsPage() {
   }
 
   // Check if user is admin
-  const { data: profile } = await supabase.from("profiles").select("*").eq("id", data.user.id).single()
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", data.user.id)
+    .single()
 
   if (!profile || profile.role !== "admin") {
     redirect("/dashboard")
@@ -28,8 +34,13 @@ export default async function AdminProductsPage() {
             <h1 className="text-3xl font-bold text-balance">
               Gerenciar <span className="gradient-text">Produtos</span>
             </h1>
-            <p className="text-muted-foreground mt-2">Adicione, edite e gerencie todos os produtos físicos da ivenns.</p>
+            <p className="text-muted-foreground mt-2">
+              Adicione, edite e gerencie todos os produtos físicos da ivenns.
+            </p>
           </div>
+
+          {/* ⬇️ Botão de importação aqui */}
+          <BulkImportButton />
 
           <ProductsManagement />
         </div>

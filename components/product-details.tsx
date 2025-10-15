@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { ArrowLeft, MessageCircle, Phone, Package, DollarSign, Calendar, Share2 } from "lucide-react"
+import { ArrowLeft, MessageCircle, Phone, Package, DollarSign, Share2 } from "lucide-react"
 
-interface Product {
+export interface Product {
   id: string
   title: string
   description: string
@@ -17,7 +17,7 @@ interface Product {
   category: string
   price: number | null
   created_at: string
-  // Campos adicionais que podem existir
+  // opcionais
   additional_images?: string[]
   specifications?: string
   features?: string[]
@@ -30,21 +30,18 @@ interface ProductDetailsProps {
 
 export function ProductDetails({ product }: ProductDetailsProps) {
   const [selectedImage, setSelectedImage] = useState(product.image_url)
-  
-  // Simular imagens adicionais se não existirem
-  const images = product.additional_images || [product.image_url]
-  if (!images.includes(product.image_url)) {
-    images.unshift(product.image_url)
-  }
+
+  const images = product.additional_images?.length ? [...product.additional_images] : [product.image_url]
+  if (!images.includes(product.image_url)) images.unshift(product.image_url)
 
   const handleConsultProduct = () => {
     const message = `Olá! Gostaria de saber mais sobre o produto: ${product.title} (Código: ${product.sku})`
-    const whatsappUrl = `https://wa.me/5511992138829?text=${encodeURIComponent(message)}`
-    window.open(whatsappUrl, '_blank')
+    const phone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || "5511992138829"
+    const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
+    window.open(whatsappUrl, "_blank", "noopener,noreferrer")
   }
 
   const handleContactProduct = () => {
-    // Scroll para seção de contato na página principal
     window.location.href = "/#contato"
   }
 
@@ -57,17 +54,16 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           url: window.location.href,
         })
       } catch (error) {
-        console.log('Error sharing:', error)
+        console.log("Error sharing:", error)
       }
     } else {
-      // Fallback: copiar URL
-      navigator.clipboard.writeText(window.location.href)
-      alert('Link copiado para a área de transferência!')
+      await navigator.clipboard.writeText(window.location.href)
+      alert("Link copiado para a área de transferência!")
     }
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
       <header className="border-b">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -87,14 +83,10 @@ export function ProductDetails({ product }: ProductDetailsProps) {
       {/* Conteúdo Principal */}
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid gap-8 lg:grid-cols-2">
-          {/* Galeria de Imagens */}
+          {/* Galeria */}
           <div className="space-y-4">
             <div className="aspect-square overflow-hidden rounded-lg border">
-              <img
-                src={selectedImage}
-                alt={product.title}
-                className="object-cover w-full h-full"
-              />
+              <img src={selectedImage} alt={product.title} className="object-cover w-full h-full" />
             </div>
             {images.length > 1 && (
               <div className="grid grid-cols-4 gap-2">
@@ -103,7 +95,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                     key={index}
                     onClick={() => setSelectedImage(image)}
                     className={`aspect-square overflow-hidden rounded border-2 transition-colors ${
-                      selectedImage === image ? 'border-primary' : 'border-muted'
+                      selectedImage === image ? "border-primary" : "border-muted"
                     }`}
                   >
                     <img
@@ -117,7 +109,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             )}
           </div>
 
-          {/* Informações do Produto */}
+          {/* Infos */}
           <div className="space-y-6">
             <div>
               <div className="flex items-center gap-2 mb-2">
@@ -125,23 +117,22 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                   <Package className="mr-1 h-3 w-3" />
                   {product.sku}
                 </Badge>
-                <Badge variant="outline">Produto</Badge>
+                <Badge variant="outline">{product.category || "Produto"}</Badge>
               </div>
+
               <h1 className="text-3xl font-bold tracking-tight mb-4">{product.title}</h1>
-              
-              {product.price && (
+
+              {product.price != null && (
                 <div className="flex items-center gap-2 mb-4">
                   <DollarSign className="h-5 w-5 text-primary" />
                   <span className="text-2xl font-bold text-primary">
-                    R$ {product.price.toFixed(2)}
+                    {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(product.price)}
                   </span>
                   <span className="text-sm text-muted-foreground">ou consulte condições</span>
                 </div>
               )}
 
-              <p className="text-lg text-muted-foreground leading-relaxed">
-                {product.description}
-              </p>
+              <p className="text-lg text-muted-foreground leading-relaxed">{product.description}</p>
             </div>
 
             <Separator />
@@ -156,12 +147,12 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Categoria:</span>
-                  <span className="font-medium">Produto</span>
+                  <span className="font-medium">{product.category || "Produto"}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Disponível desde:</span>
                   <span className="font-medium">
-                    {new Date(product.created_at).toLocaleDateString('pt-BR')}
+                    {product.created_at ? new Date(product.created_at).toLocaleDateString("pt-BR") : "—"}
                   </span>
                 </div>
                 {product.warranty && (
@@ -175,24 +166,15 @@ export function ProductDetails({ product }: ProductDetailsProps) {
 
             <Separator />
 
-            {/* Botões de Ação */}
+            {/* Ações */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Interessado neste produto?</h3>
               <div className="grid gap-3">
-                <Button 
-                  onClick={handleConsultProduct}
-                  size="lg"
-                  className="w-full bg-green-600 hover:bg-green-700"
-                >
+                <Button onClick={handleConsultProduct} size="lg" className="w-full bg-green-600 hover:bg-green-700">
                   <MessageCircle className="mr-2 h-5 w-5" />
                   Consultar via WhatsApp
                 </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={handleContactProduct}
-                  size="lg"
-                  className="w-full"
-                >
+                <Button variant="outline" onClick={handleContactProduct} size="lg" className="w-full">
                   <Phone className="mr-2 h-5 w-5" />
                   Entrar em Contato
                 </Button>
@@ -204,7 +186,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           </div>
         </div>
 
-        {/* Seção Adicional */}
+        {/* Seção extra */}
         <div className="mt-16">
           <Card>
             <CardContent className="p-6">
@@ -231,3 +213,5 @@ export function ProductDetails({ product }: ProductDetailsProps) {
     </div>
   )
 }
+
+export default ProductDetails
