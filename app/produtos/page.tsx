@@ -17,8 +17,8 @@ import FiltersBar from "@/components/FiltersBar"
 
 /* ==================== SEO ==================== */
 export const metadata: Metadata = {
-  title: "Produtos | Interatell",
-  description: "Catálogo de soluções tecnológicas Interatell. Explore produtos selecionados para desempenho e confiabilidade.",
+  title: "Produtos | Ivenns",
+  description: "Catálogo de soluções tecnológicas Ivenns. Explore produtos selecionados para desempenho e confiabilidade.",
 }
 
 /* ==================== Tipos ==================== */
@@ -310,7 +310,7 @@ export default async function ProductsPage({
         <div className="mb-6 text-center">
           <div className="mx-auto mb-4 inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-sm text-white/80 backdrop-blur">
             <Package className="h-4 w-4" />
-            Catálogo Interatell
+            Catálogo Ivenns
           </div>
         </div>
 
