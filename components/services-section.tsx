@@ -1,11 +1,7 @@
+// SERVICES-SECTION (traz TODOS os serviços, com paginação)
 "use client"
 
-import {
-  useEffect,
-  useMemo,
-  useState,
-  type ComponentType,
-} from "react"
+import { useEffect, useMemo, useState, type ComponentType } from "react"
 import { motion, useReducedMotion, type Variants, type Transition } from "framer-motion"
 import {
   Check,
@@ -25,7 +21,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 
 /* =========================
-   Tipos (inalterados)
+   Tipos
 ========================= */
 export interface Service {
   id: string
@@ -45,6 +41,7 @@ export interface Service {
     icon?: string
   } | null
 }
+type PageInfo = { hasMore: boolean; offset: number; returned: number; total?: number; limit: number }
 
 /* =========================
    Ícones
@@ -71,7 +68,9 @@ type ServicesSectionProps = {
   subheading?: string
   ctaLabel?: string
   ctaHref?: string
-  limit?: number
+  /** Limite de itens apenas para exibição; 0/undefined = mostrar todos */
+  showLimit?: number
+  /** Endpoint base. Pode trazer array ou { items, page }. */
   api?: string
 }
 
@@ -85,7 +84,7 @@ function buildWhatsAppLink(serviceTitle: string) {
 }
 
 /* =========================
-   Helpers HTML
+   Helpers
 ========================= */
 function isProbablyHtml(s?: string) {
   if (!s) return false
@@ -115,34 +114,68 @@ function HtmlDescription({ html }: { html: string }) {
     />
   )
 }
+const norm = (s?: string) =>
+  (s || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+const isServiceCat = (s?: string) => /servic/.test(norm(s)) // service/services/servico/servicos…
+
+/** Faz fetch de TODAS as páginas de um endpoint que aceita limit/offset e pode responder {items,page} */
+async function fetchAllServices(apiBase: string, perPage = 200): Promise<Service[]> {
+  const out: Service[] = []
+  let offset = 0
+  let hasMore = true
+
+  // garante limit/offset na URL
+  const base = new URL(apiBase, typeof window !== "undefined" ? window.location.origin : "http://localhost")
+  // removemos limit/offset existentes para controlar aqui
+  base.searchParams.delete("limit")
+  base.searchParams.delete("offset")
+
+  while (hasMore) {
+    const url = new URL(base.toString())
+    url.searchParams.set("limit", String(perPage))
+    url.searchParams.set("offset", String(offset))
+
+    const res = await fetch(url.toString(), { cache: "no-store", credentials: "same-origin" })
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+
+    const textBody = await res.text()
+    const parsed = textBody && textBody.trim() ? JSON.parse(textBody) : []
+    const items = Array.isArray(parsed) ? parsed : (parsed?.items ?? [])
+    const page: PageInfo | undefined = Array.isArray(parsed) ? undefined : parsed?.page
+
+    const batch = (items ?? []) as Service[]
+    out.push(...batch)
+
+    // critério de parada
+    if (page) {
+      hasMore = !!page.hasMore
+      offset = page.offset + (page.returned ?? batch.length)
+    } else {
+      // quando API não oferece page.hasMore, paramos quando veio menos que o perPage
+      hasMore = batch.length === perPage
+      offset += batch.length
+    }
+
+    if (!hasMore) break
+  }
+
+  return out
+}
 
 /* =========================
-   Itens adicionais (minimalista)
+   Itens adicionais (opcional)
 ========================= */
-const EXTRA_SERVICES: Array<{
-  icon: ComponentType<any>
-  title: string
-  desc: string
-}> = [
-  {
-    icon: MapPin,
-    title: "Atendimento no local",
-    desc: "Enviamos um técnico até você para executar o atendimento.",
-  },
-  {
-    icon: Headphones,
-    title: "Atendimento remoto",
-    desc: "Engenheiros especializados para diagnóstico e resolução remota.",
-  },
-  {
-    icon: Clock,
-    title: "Contratos 24x7 em todo o Brasil",
-    desc: "Cobertura nacional com SLA contínuo.",
-  },
+const EXTRA_SERVICES: Array<{ icon: ComponentType<any>; title: string; desc: string }> = [
+  { icon: MapPin, title: "Atendimento no local", desc: "Enviamos um técnico até você para executar o atendimento." },
+  { icon: Headphones, title: "Atendimento remoto", desc: "Engenheiros especializados para diagnóstico e resolução remota." },
+  { icon: Clock, title: "Contratos 24x7 em todo o Brasil", desc: "Cobertura nacional com SLA contínuo." },
 ]
 
 /* =========================
-   Seção (LIGHT)
+   Seção
 ========================= */
 export default function ServicesSection({
   id = "servicos",
@@ -150,12 +183,13 @@ export default function ServicesSection({
   subheading = "Soluções completas de ponta a ponta",
   ctaLabel = "Fale com um especialista",
   ctaHref = "/#contato",
-  limit = 6,
+  showLimit, // SEM limite por padrão
   api = "/api/products?category=service",
 }: ServicesSectionProps) {
   const prefersReduced = useReducedMotion()
   const [services, setServices] = useState<Service[] | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   const DEBUG = useMemo(() => {
     if (typeof window === "undefined") return false
@@ -165,80 +199,59 @@ export default function ServicesSection({
   useEffect(() => {
     let mounted = true
     const ac = new AbortController()
-    const delays = [0, 300, 800]
+    ;(async () => {
+      try {
+        setError(null)
+        setLoading(true)
 
-    const load = async () => {
-      for (let i = 0; i < delays.length; i++) {
-        try {
-          if (delays[i]) await new Promise((r) => setTimeout(r, delays[i]))
-          const res = await fetch(api, { cache: "no-store", credentials: "same-origin", signal: ac.signal })
-          if (!res.ok) throw new Error(`HTTP ${res.status}`)
-          const textBody = await res.text()
-          let parsed: unknown = []
-          if (textBody && textBody.trim().length > 0) parsed = JSON.parse(textBody)
-          if (!mounted) return
+        const all = await fetchAllServices(api, 200) // busca TUDO em páginas de 200
+        if (!mounted) return
 
-          const list = Array.isArray(parsed) ? (parsed as Service[]) : []
-          const filtered = (list || [])
-            .filter((s) => s?.category?.toLowerCase?.() === "service")
-            .filter((s) => s?.metadata?.visible !== false)
-            .sort((a, b) => (a?.metadata?.order ?? 9999) - (b?.metadata?.order ?? 9999))
-            .slice(0, limit)
+        // se a URL já tem category=service, NÃO filtramos de novo;
+        // senão, filtramos por categoria reconhecida como “serviço”
+        const apiHasServiceCategory = /[?&]category=service\b/i.test(api)
+        const onlyServices = apiHasServiceCategory ? all : all.filter((s) => isServiceCat(s.category))
 
-          setServices(filtered)
-          setLoading(false)
-          break
-        } catch (e: any) {
-          if (e?.name === "AbortError") {
-            setLoading(false)
-            return
-          }
-        } finally {
-          if (i === delays.length - 1 && mounted) setLoading(false)
+        // respeita metadata.visible !== false
+        const visible = onlyServices.filter((s) => (s?.metadata?.visible ?? true) !== false)
+
+        // ordena por metadata.order (quando informado)
+        const ordered = visible.sort(
+          (a, b) => (a?.metadata?.order ?? 9999) - (b?.metadata?.order ?? 9999)
+        )
+
+        // aplica limite só de EXIBIÇÃO se showLimit vier > 0
+        const finalList = showLimit && showLimit > 0 ? ordered.slice(0, showLimit) : ordered
+
+        setServices(finalList)
+        setLoading(false)
+
+        if (DEBUG) {
+          // eslint-disable-next-line no-console
+          console.log({ totalAll: all.length, afterFilter: onlyServices.length, visible: visible.length, final: finalList.length })
         }
+      } catch (e: any) {
+        if (e?.name === "AbortError") return
+        if (!mounted) return
+        setError(e?.message || "Falha ao carregar serviços")
+        setLoading(false)
       }
-    }
+    })()
 
-    load()
     return () => {
       mounted = false
       ac.abort()
     }
-  }, [api, limit])
+  }, [api, showLimit, DEBUG])
 
   // Motion presets
-  const container: Variants = {
-    hidden: { opacity: 0 },
-    show: { opacity: 1, transition: { staggerChildren: 0.07, delayChildren: 0.06 } },
-  }
+  const container: Variants = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.07, delayChildren: 0.06 } } }
   const springTransition: Transition = { type: "spring", stiffness: 120, damping: 16, mass: 0.9 }
-  const item: Variants = {
-    hidden: { opacity: 0, y: prefersReduced ? 0 : 14 },
-    show: { opacity: 1, y: 0, transition: springTransition },
-  }
-
-  const cards = (services ?? []).map((s, idx) => {
-    const Icon = pickIcon(s.metadata?.icon)
-    const waHref = buildWhatsAppLink(s.title)
-    return (
-      <motion.div key={s.id ?? `s-${idx}`} variants={item} className="h-full">
-        <ServiceCard
-          Icon={Icon}
-          title={s.title}
-          desc={s.description}
-          bullets={s.metadata?.bullets ?? []}
-          href={waHref}
-          imageUrl={s.image_url}
-          highlight={s.metadata?.highlight}
-          price={s.price}
-        />
-      </motion.div>
-    )
-  })
+  const item: Variants = { hidden: { opacity: 0, y: prefersReduced ? 0 : 14 }, show: { opacity: 1, y: 0, transition: springTransition } }
 
   return (
     <section id={id} className="relative overflow-hidden py-20 sm:py-28 text-neutral-900">
-      {/* ===== Background LIGHT com sutilezas ===== */}
+      {/* BG */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div className="absolute inset-0 bg-[radial-gradient(120%_80%_at_50%_0%,#ffffff_0%,#fafafa_55%,#f5f6f8_100%)]" />
         <div className="absolute inset-0 opacity-70 [mask-image:radial-gradient(70%_60%_at_50%_40%,#000,transparent_72%)]">
@@ -267,95 +280,81 @@ export default function ServicesSection({
           <motion.p variants={item} className="mt-2 text-neutral-600">
             {subheading}
           </motion.p>
-
-          {/* ===== Itens adicionais (minimal) ===== */}
-          <motion.ul
-            variants={item}
-            className="mt-8 grid gap-6 sm:grid-cols-3"
-            aria-label="Serviços adicionais"
-          >
-            {EXTRA_SERVICES.map(({ icon: Icon, title, desc }) => (
-              <li key={title} className="flex items-start gap-3">
-                <div className="mt-0.5 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-neutral-100 text-neutral-900 ring-1 ring-black/5">
-                  <Icon className="h-4 w-4" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-neutral-900">{title}</p>
-                  <p className="text-sm text-neutral-600">{desc}</p>
-                </div>
-              </li>
-            ))}
-          </motion.ul>
-
-          {/* CTA */}
-          <motion.div variants={item} className="mt-8">
-            <Button
-              asChild
-              size="lg"
-              className="
-                group relative overflow-hidden rounded-full
-                bg-[linear-gradient(90deg,#0f172a,#1f2937)]
-                text-white
-                shadow-[0_18px_60px_-24px_rgba(2,6,23,.25)]
-                hover:bg-[linear-gradient(90deg,#0b1320,#111827)]
-              "
-            >
-              <a href={ctaHref}>
-                <span className="relative z-10 inline-flex items-center gap-2">
-                  <Sparkles className="h-4 w-4" />
-                  {ctaLabel}
-                </span>
-                <span
-                  aria-hidden
-                  className="pointer-events-none absolute inset-0 translate-x-[-120%] bg-gradient-to-r from-transparent via-white/35 to-transparent transition-transform duration-700 ease-out group-hover:translate-x-[120%] [mask-image:linear-gradient(90deg,transparent,white,transparent)]"
-                />
-              </a>
-            </Button>
-          </motion.div>
         </motion.div>
 
-        {/* Grid de serviços */}
-        <motion.div
-          variants={container}
-          initial="hidden"
-          animate="show"
-          className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
-        >
+        {/* Grid */}
+        <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {loading &&
-            Array.from({ length: limit }).map((_, i) => (
-              <div
-                key={i}
-                className="h-60 animate-pulse rounded-2xl border border-neutral-200/80 bg-white/80 shadow-[inset_0_1px_0_rgba(255,255,255,.7)]"
-              />
+            Array.from({ length: Math.max(6, showLimit || 12) }).map((_, i) => (
+              <div key={i} className="h-60 animate-pulse rounded-2xl border border-neutral-200/80 bg-white/80 shadow-[inset_0_1px_0_rgba(255,255,255,.7)]" />
             ))}
 
-          {!loading && services && services.length === 0 && (
+          {!loading && error && (
+            <div className="col-span-full flex flex-col items-center justify-center gap-3 rounded-2xl border border-neutral-200 bg-white/80 p-10 text-center shadow-sm">
+              <Package className="h-6 w-6 text-neutral-400" />
+              <p className="text-sm text-neutral-600">Não foi possível carregar os serviços.</p>
+              <p className="text-xs text-neutral-500">Detalhes: {error}</p>
+            </div>
+          )}
+
+          {!loading && !error && services && services.length === 0 && (
             <div className="col-span-full flex flex-col items-center justify-center gap-3 rounded-2xl border border-neutral-200 bg-white/80 p-10 text-center shadow-sm">
               <Package className="h-6 w-6 text-neutral-400" />
               <p className="text-sm text-neutral-600">Nenhum serviço publicado ainda.</p>
             </div>
           )}
 
-          {!loading && services && cards}
+          {!loading && !error && services && services.length > 0 && services.map((s, idx) => {
+            const Icon = pickIcon(s.metadata?.icon)
+            const waHref = buildWhatsAppLink(s.title)
+            return (
+              <motion.div key={s.id ?? `s-${idx}`} variants={item} className="h-full">
+                <ServiceCard
+                  Icon={Icon}
+                  title={s.title}
+                  desc={s.description}
+                  bullets={s.metadata?.bullets ?? []}
+                  href={waHref}
+                  imageUrl={s.image_url}
+                  highlight={s.metadata?.highlight}
+                  price={s.price}
+                />
+              </motion.div>
+            )
+          })}
         </motion.div>
+
+        {/* CTA */}
+        <div className="mt-10 text-center">
+          <Button
+            asChild
+            size="lg"
+            className="group relative overflow-hidden rounded-full bg-[linear-gradient(90deg,#0f172a,#1f2937)] text-white shadow-[0_18px_60px_-24px_rgba(2,6,23,.25)] hover:bg-[linear-gradient(90deg,#0b1320,#111827)]"
+          >
+            <a href={ctaHref}>
+              <span className="relative z-10 inline-flex items-center gap-2">
+                <Sparkles className="h-4 w-4" />
+                {ctaLabel}
+              </span>
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-0 translate-x-[-120%] bg-gradient-to-r from-transparent via-white/35 to-transparent transition-transform duration-700 ease-out group-hover:translate-x-[120%] [mask-image:linear-gradient(90deg,transparent,white,transparent)]"
+              />
+            </a>
+          </Button>
+        </div>
       </div>
 
-      {/* keyframes / utilidades globais */}
       <style jsx global>{`
-        @keyframes gridMove {
-          0% { transform: translateX(0) translateY(0) }
-          100% { transform: translateX(-80px) translateY(-80px) }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          * { animation: none !important; transition: none !important; }
-        }
+        @keyframes gridMove { 0% { transform: translateX(0) translateY(0) } 100% { transform: translateX(-80px) translateY(-80px) } }
+        @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
       `}</style>
     </section>
   )
 }
 
 /* =========================
-   Card (white/grey)
+   Card
 ========================= */
 function ServiceCard({
   Icon,
